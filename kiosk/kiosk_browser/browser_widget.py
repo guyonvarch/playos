@@ -1,21 +1,33 @@
 import re
+import urllib
+import logging
 from PyQt5.QtCore import QTimer
 from PyQt5.QtWidgets import QShortcut
-from PyQt5.QtWebEngineWidgets import QWebEngineView, QWebEnginePage, QWebEngineProfile
+from PyQt5.QtWebEngineWidgets import QWebEngineView
 from PyQt5.QtWidgets import QSizePolicy
 
 from kiosk_browser import system
 
 class BrowserWidget(QWebEngineView):
 
-    def __init__(self, url, *args, **kwargs):
+    def __init__(self, url, proxy, *args, **kwargs):
         QWebEngineView.__init__(self, *args, **kwargs)
 
+        # Authenticate proxies
+        proxy_url = urllib.parse.urlparse(proxy)
+        if proxy_url.username != None and proxy_url.password != None:
+            self.page().proxyAuthenticationRequired.connect(
+                lambda url, auth, proxyHost: self._proxy_auth(
+                    proxy_url.username, proxy_url.password, url, auth, proxyHost))
+
+        # Override user agent
         self.page().profile().setHttpUserAgent(user_agent_with_system(
             user_agent = self.page().profile().httpUserAgent(),
             system_name = system.NAME,
             system_version = system.VERSION
         ))
+
+        # Load url
         self.page().setUrl(url)
 
         # Shortcut to manually reload
@@ -43,6 +55,11 @@ class BrowserWidget(QWebEngineView):
     def _load_finished(self, success):
         if not success:
             QTimer.singleShot(5000, self.reload)
+
+    def _proxy_auth(self, username, password, url, auth, proxyHost):
+        logging.info(f"Authenticating proxy")
+        auth.setUser(username)
+        auth.setPassword(password)
 
 def user_agent_with_system(user_agent, system_name, system_version):
     """Inject a specific system into a user agent string"""
