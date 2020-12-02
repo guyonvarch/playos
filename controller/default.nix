@@ -29,6 +29,7 @@ ocamlPackages.buildDunePackage rec {
   ];
 
   propagatedBuildInputs = with ocamlPackages; [
+    base
     opium
     ocaml_lwt
     logs
