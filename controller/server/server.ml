@@ -14,7 +14,6 @@ let shutdown () =
   | _ ->
     Lwt.fail_with (Format.sprintf "shutdown failed")
 
-
 let main debug port =
   Logs.set_reporter (Logging.reporter ());
 
@@ -23,10 +22,18 @@ let main debug port =
   else
     Logs.set_level (Some Logs.Info);
 
+  let%lwt proxy = Proxy.get_from_connman () in
+
   let%lwt server_info = Info.get () in
 
   let%lwt () =
     Logs_lwt.info (fun m -> m "PlayOS Controller Daemon (%s)" server_info.version)
+  in
+
+  let%lwt () =
+    match proxy with
+    | Some p -> Logs_lwt.info (fun m -> m "proxy: %s" (Proxy.to_string ~blur_password:true p))
+    | None -> Logs_lwt.info (fun m -> m "proxy: none")
   in
 
   (* Connect with systemd *)
@@ -89,6 +96,7 @@ let main debug port =
       ~shutdown
       ~rauc
       ~connman
+      ~proxy
       ~internet
       ~update_s
       ~health_s
@@ -123,7 +131,7 @@ let () =
                        (info ~doc:"Enable debug output." ["d"; "debug"])
                      |> value)
   in
-  let port_a = Arg.(opt int 3333 
+  let port_a = Arg.(opt int 3333
                       (info ~doc:"Port on which to start gui (http server)." ~docv:"PORT" ["p"; "port"])
                     |> value)
   in

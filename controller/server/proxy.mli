@@ -12,3 +12,5 @@ type t =
 val validate : string -> t option
 
 val to_string : ?blur_password:bool -> t -> string
+
+val get_from_connman : unit -> t option Lwt.t

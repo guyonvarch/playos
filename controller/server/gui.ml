@@ -251,10 +251,11 @@ module NetworkGui = struct
 
   let overview
       ~(connman:Manager.t)
+      ~(proxy:Proxy.t option)
       ~(internet:Internet.state Lwt_react.S.t)
       req =
 
-    (* Check if internet connected *)
+    (* Check if internet is connected *)
     let internet_connected =
         internet
         |> Lwt_react.S.value
@@ -276,6 +277,11 @@ module NetworkGui = struct
     page "network"
       [
         "internet_connected", internet_connected |> Ezjsonm.bool
+      ; "is_proxy_set", Ezjsonm.bool (Option.is_some proxy)
+      ; "proxy", proxy
+          |> Option.map (Proxy.to_string ~blur_password:true)
+          |> Option.value ~default:""
+          |> Ezjsonm.string
       ; "services", services |> Ezjsonm.list (fun s ->
           s
           |> blur_service_proxy_password
@@ -364,10 +370,11 @@ module NetworkGui = struct
 
   let build
       ~(connman:Connman.Manager.t)
+      ~(proxy:Proxy.t option)
       ~(internet:Network.Internet.state Lwt_react.S.t)
       app =
     app
-    |> get "/network" (overview ~connman ~internet)
+    |> get "/network" (overview ~connman ~proxy ~internet)
     |> post "/network/:id/connect" (connect ~connman)
     |> post "/network/:id/proxy" (update_proxy ~connman)
     |> post "/network/:id/remove" (remove ~connman)
@@ -481,7 +488,7 @@ module ChangelogGui = struct
         ])
 end
 
-let routes ~shutdown ~health_s ~update_s ~rauc ~connman ~internet app =
+let routes ~shutdown ~health_s ~update_s ~rauc ~connman ~proxy ~internet app =
   app
   |> middleware (static ())
   |> middleware error_handling
@@ -495,15 +502,15 @@ let routes ~shutdown ~health_s ~update_s ~rauc ~connman ~internet app =
     )
 
   |> InfoGui.build
-  |> NetworkGui.build ~connman ~internet
+  |> NetworkGui.build ~connman ~proxy ~internet
   |> LocalizationGui.build
   |> LabelGui.build
   |> StatusGui.build ~health_s ~update_s ~rauc
   |> ChangelogGui.build
 
 (* NOTE: probably easier to create a record with all the inputs instead of passing in x arguments. *)
-let start ~port ~shutdown ~health_s ~update_s ~rauc ~connman ~internet =
+let start ~port ~shutdown ~health_s ~update_s ~rauc ~connman ~proxy ~internet =
   empty
   |> Opium.App.port port
-  |> routes ~shutdown ~health_s ~update_s ~rauc ~connman ~internet
+  |> routes ~shutdown ~health_s ~update_s ~rauc ~connman ~proxy ~internet
   |> start

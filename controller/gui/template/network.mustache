@@ -5,6 +5,11 @@
 </div>
 
 <dl class="d-Definitions">
+    {{#is_proxy_set}}
+        <dt class="d-Definitions__Term">Proxy</dt>
+        <dd class="d-Definitions__Description">{{proxy}}</dd>
+    {{/is_proxy_set}}
+
     <dt class="d-Definitions__Term">Internet</dt>
     <dd class="d-Definitions__Description">
         {{#internet_connected}}
