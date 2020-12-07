@@ -24,7 +24,7 @@ let main debug port =
 
   let%lwt proxy = Proxy.get_from_connman () in
 
-  let%lwt server_info = Info.get () in
+  let%lwt server_info = Info.get ~proxy in
 
   let%lwt () =
     Logs_lwt.info (fun m -> m "PlayOS Controller Daemon (%s)" server_info.version)
@@ -60,7 +60,7 @@ let main debug port =
   let%lwt connman = Connman.Manager.connect () in
 
   (* Get Internet state *)
-  let%lwt internet, internet_p = Network.Internet.get connman in
+  let%lwt internet, internet_p = Network.Internet.get connman ~proxy in
 
   (* Log changes to Internet state *)
   let%lwt () =
@@ -75,7 +75,7 @@ let main debug port =
   in
 
   (* Start the update mechanism *)
-  let update_s, update_p = Update.start ~rauc ~update_url:Info.update_url in
+  let update_s, update_p = Update.start ~proxy ~rauc ~update_url:Info.update_url in
 
   (* Log changes in update mechanism state *)
   let%lwt () =

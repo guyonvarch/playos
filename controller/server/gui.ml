@@ -14,7 +14,6 @@ let of_file f =
   |> Mustache.of_string
   |> return
 
-
 (* Require the resource directory to be at a directory fixed to the binary location. This is not optimal, but works for the moment. TODO: figure out a better way to do this.
 *)
 let resource_path end_path =
@@ -85,10 +84,10 @@ let error_handling =
 
 (** Display basic server information *)
 module InfoGui = struct
-  let build app =
+  let build ~proxy app =
     app
     |> get "/info" (fun _ ->
-        let%lwt server_info = Info.get () in
+        let%lwt server_info = Info.get ~proxy in
         page "info" [ "server_info", server_info |> Info.to_json ])
 end
 
@@ -235,7 +234,7 @@ module LocalizationGui = struct
     in
     "/localization" |> Uri.of_string |> redirect'
 
-  let build app =
+  let build ~proxy app =
     app
     |> get "/localization" overview
     |> post "/localization/timezone" set_timezone
@@ -386,13 +385,13 @@ end
 module LabelGui = struct
   open Label_printer
 
-  let make_label () =
+  let make_label ~proxy =
     let%lwt ethernet_interfaces =
       Network.Interface.get_all ()
       >|= List.filter (fun (i: Network.Interface.t) ->
           Re.execp (Re.seq [Re.start; Re.str "enp" ] |> Re.compile) i.name)
     in
-    let%lwt server_info = Info.get () in
+    let%lwt server_info = Info.get ~proxy in
     return
       ({ machine_id = server_info.machine_id
        ; mac_1 = CCOpt.(
@@ -409,8 +408,8 @@ module LabelGui = struct
            )
        } : Label_printer.label)
 
-  let overview req =
-    let%lwt label = make_label () in
+  let overview ~proxy req =
+    let%lwt label = make_label ~proxy in
     page "label"
       [ "machine_id", label.machine_id |> Ezjsonm.string
       ; "mac_1", label.mac_1 |> Ezjsonm.string
@@ -419,7 +418,7 @@ module LabelGui = struct
         "http://192.168.0.5:3000/play-computer" |> Ezjsonm.string
       ]
 
-  let print req =
+  let print ~proxy req =
     let%lwt form_data = urlencoded_pairs_of_body req in
     let url = form_data
               |> List.assoc "label_printer_url"
@@ -430,17 +429,17 @@ module LabelGui = struct
                 |> List.hd
                 |> int_of_string
     in
-    let%lwt label = make_label () in
+    let%lwt label = make_label ~proxy in
     CCList.replicate count ()
     |> Lwt_list.iter_s
       (fun () -> Label_printer.print ~url label)
     >|= (fun () -> "Labels printed.")
     >>= success
 
-  let build app =
+  let build ~proxy app =
     app
-    |> get "/label" overview
-    |> post "/label/print" print
+    |> get "/label" (overview ~proxy)
+    |> post "/label/print" (print ~proxy)
 
 end
 
@@ -501,10 +500,10 @@ let routes ~shutdown ~health_s ~update_s ~rauc ~connman ~proxy ~internet app =
       >|= respond
     )
 
-  |> InfoGui.build
+  |> InfoGui.build ~proxy
   |> NetworkGui.build ~connman ~proxy ~internet
-  |> LocalizationGui.build
-  |> LabelGui.build
+  |> LocalizationGui.build ~proxy
+  |> LabelGui.build ~proxy
   |> StatusGui.build ~health_s ~update_s ~rauc
   |> ChangelogGui.build
 
