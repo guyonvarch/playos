@@ -1,11 +1,11 @@
 (executable
  (name server)
  (public_name playos-controller)
- (modules server update info gui health)
+ (modules server update info gui health proxy)
  (libraries lwt logs logs.fmt logs.lwt fpath cohttp-lwt-unix logging
   opium tyxml mustache
   rauc zerotier connman locale network timedate systemd label_printer
-  semver2)
+  semver2 str)
  (preprocess (pps lwt_ppx ppx_sexp_conv)))
 
 (library
