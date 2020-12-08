@@ -52,7 +52,7 @@
 
                           <div class="d-Network__AdvancedSettingsTitle">
                             <label for="{{id}}-proxy" class="d-Network__Label">Proxy</label>
-                            <input type="text" class="d-Input d-Network__Input" id="{{id}}-proxy" value="{{proxy}}" name="proxy" placeholder="http://user:password@host:port">
+                            <input type="text" id="{{id}}-proxy" class="d-Input d-Network__Input" name="proxy" placeholder="http://user:password@host:port">
                             <p class="d-Network__Note">Note that proxy change requires a restart.</p>
                           </div>
                         </details>
@@ -70,7 +70,8 @@
                         <summary>Advanced Settings</summary>
 
                         <form action="/network/{{id}}/proxy" method="post" class="d-Network__Form">
-                            <input type="text" class="d-Input d-Network__Input" name="proxy" placeholder="http://user:password@host:port">
+                            <label for="{{id}}-proxy" class="d-Network__Label">Proxy</label>
+                            <input type="text" id="{{id}}-proxy" class="d-Input d-Network__Input" name="proxy" placeholder="http://user:password@host:port">
                             <input type="submit" class="d-Button" value="Update Proxy">
                             <p class="d-Network__Note">Note that proxy change requires a restart.</p>
                         </form>
