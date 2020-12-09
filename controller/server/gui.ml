@@ -14,7 +14,6 @@ let of_file f =
   |> Mustache.of_string
   |> return
 
-
 (* Require the resource directory to be at a directory fixed to the binary location. This is not optimal, but works for the moment. TODO: figure out a better way to do this.
 *)
 let resource_path end_path =
