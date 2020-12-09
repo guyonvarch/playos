@@ -1,6 +1,6 @@
 (library
  (name zerotier)
  (modules zerotier)
- (libraries logs logs.lwt cohttp-lwt-unix ezjsonm sexplib)
+ (libraries logs logs.lwt cohttp-lwt-unix ezjsonm sexplib curl)
  (preprocess (pps lwt_ppx  ppx_sexp_conv)))
 
