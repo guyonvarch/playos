@@ -3,6 +3,7 @@
 
 import dbus
 import time
+from datetime import datetime
 
 bus = dbus.SystemBus()
 
@@ -11,13 +12,16 @@ client = dbus.Interface(
     "net.connman.Manager")
 
 def wait_for_connman():
-    # Waiting for connman, as it does not return the services until some
-    # seconds after startup (~4 seconds).
-    for i in range(0, 20):
-        if client.GetServices():
-            break
-        else:
-            time.sleep(0.5)
+    with open(f'/home/play/{datetime.now().strftime("%H:%M:%S")}.txt', 'w') as f:
+        # Waiting for connman, as it does not return the services until some
+        # seconds after startup (~4 seconds).
+        for i in range(0, 20):
+            if client.GetServices():
+                f.write(f'{client.GetServices()}')
+                break
+            else:
+                f.write('.')
+                time.sleep(0.5)
 
 wait_for_connman()
 
