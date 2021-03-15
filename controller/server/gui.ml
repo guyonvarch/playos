@@ -415,6 +415,7 @@ end
 module RemoteManagementGui = struct
 
   let rec wait_until_zerotier_is_on () =
+    let%lwt () = Lwt_unix.sleep 0.5 in
     match%lwt Zerotier.get_status () with
     | Ok _ ->
         redirect' (Uri.of_string "/info")

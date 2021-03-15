@@ -9,6 +9,7 @@ let remote_management_form action button_label =
     ]
     [ input
         ~a:[ a_input_type `Submit
+        ; a_id "d-Info__RemoteManagementButton"
         ; a_class [ "d-Button" ]
         ; a_value button_label
         ]

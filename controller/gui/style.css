@@ -187,6 +187,22 @@
     color: red;
 }
 
+/* Loader */
+
+.d-Loader {
+    border: 0.3rem solid #F3F3F3;
+    border-top: 0.3rem solid #CCCCCC;
+    border-radius: 50%;
+    width: 2rem;
+    height: 2rem;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
 /* Wifi signal */
 
 .d-WifiSignal {
