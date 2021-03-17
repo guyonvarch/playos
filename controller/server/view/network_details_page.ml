@@ -46,10 +46,11 @@ let not_connected_form service =
               [ txt "Passphrase" ]
           ]
       ; input
-          ~a:[ a_input_type `Text
+          ~a:[ a_input_type `Password
           ; a_class [ "d-Input";  "d-Network__Input" ]
           ; a_id passphrase_id
           ; a_name "passphrase"
+          ; Unsafe.string_attrib "is" "show-password"
           ]
           ()
       ; details
