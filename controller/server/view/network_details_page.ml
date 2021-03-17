@@ -1,21 +1,20 @@
 open Connman.Service
 open Tyxml.Html
 
-let proxy_id service_id =
-  "proxy-" ^ service_id
+let proxy_id = "d-Proxy"
 
-let proxy_label service_id =
+let proxy_label =
   div
     ~a:[ a_class [ "d-Network__Label" ] ]
     [ label
-        ~a:[ a_label_for (proxy_id service_id) ]
+        ~a:[ a_label_for proxy_id ]
         [ txt "URL" ]
     ]
 
-let proxy_input ?proxy service_id =
+let proxy_input ?proxy () =
   input
     ~a:[ a_input_type `Text
-    ; a_id (proxy_id service_id)
+    ; a_id proxy_id
     ; a_class [ "d-Input"; "d-Network__Input" ]
     ; a_name "proxy"
     ; a_value (Option.value ~default:"" proxy)
@@ -33,7 +32,8 @@ let proxy_form_note =
     ]
 
 let not_connected_form service =
-  let passphrase_id = "passphrase-" ^ service.id in
+  let passphrase_id = "d-Passphrase" in
+  let checkbox_id = "d-Checkbox" in
   form
       ~a:[ a_action ("/network/" ^ service.id ^ "/connect")
       ; a_method `Post
@@ -46,18 +46,26 @@ let not_connected_form service =
               [ txt "Passphrase" ]
           ]
       ; input
-          ~a:[ a_input_type `Text
+          ~a:[ a_input_type `Password
           ; a_class [ "d-Input";  "d-Network__Input" ]
           ; a_id passphrase_id
           ; a_name "passphrase"
           ]
           ()
+      ; input
+          ~a:[ a_input_type `Checkbox
+          ; a_id checkbox_id
+          ]
+          ()
+      ; label
+          ~a:[ a_label_for checkbox_id ]
+          [ txt "Show passphrase" ]
       ; details
           (summary [ txt "Proxy Settings" ])
           [ div
               ~a:[ a_class [ "d-Network__AdvancedSettingsTitle" ] ]
-              [ proxy_label service.id
-              ; proxy_input service.id
+              [ proxy_label
+              ; proxy_input ()
               ; proxy_form_note
               ]
           ]
@@ -200,7 +208,7 @@ let connected_form service =
         (summary [ txt "Proxy Settings" ])
         [ div
             ~a:[ a_class [ "d-Network__Form" ] ]
-            [ proxy_label service.id
+            [ proxy_label
             ; div
                 ~a:[ a_class [ "d-Network__ProxyForm" ] ]
                 [ form
@@ -208,7 +216,7 @@ let connected_form service =
                     ; a_method `Post
                     ; a_class [ "d-Network__ProxyUpdate" ]
                     ]
-                    [ proxy_input ?proxy:service.proxy service.id
+                    [ proxy_input ?proxy:service.proxy ()
                     ; input
                         ~a:[ a_input_type `Submit
                         ; a_class [ "d-Button" ]
