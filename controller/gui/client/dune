@@ -1,0 +1,4 @@
+(executable
+  (name client)
+  (modules client)
+  (preprocess (pps js_of_ocaml-ppx)))

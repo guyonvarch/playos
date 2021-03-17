@@ -40,5 +40,11 @@ ocamlPackages.buildDunePackage rec {
     sexplib
     ezjsonm
     containers
+
+    # client side
+    js_of_ocaml
+    js_of_ocaml-ppx
+    # js_of_ocaml-tyxml
+    # cohttp-lwt-jsoo
   ];
 }

@@ -2,6 +2,7 @@
  (section share_root)
  (files
   (Changelog.html as Changelog.html)
+  (gui/client/client.bc.js as static/client.js)
   (gui/reset.css as static/reset.css)
   (gui/style.css as static/style.css)
   (gui/info.svg as static/info.svg)
