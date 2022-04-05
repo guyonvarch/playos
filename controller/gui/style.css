@@ -108,17 +108,21 @@
   position: relative;
 }
 
-.d-NetworkList__Network--Connected:before {
-  content: "";
-  display: block;
-  border-radius: 0.5rem;
-  width: 0.5rem;
-  height: 0.5rem;
-  background: black;
+.d-NetworkList__Connected {
+  display: flex;
+  align-items: center;
+}
 
-  position: absolute;
-  left: 0.5rem;
-  top: calc(50% - 0.25rem);
+.d-NetworkList__Connected::after {
+  content: "connected";
+  margin-left: 1rem;
+  text-transform: uppercase;
+  font-weight: bold;
+  font-size: 50%;
+  background-color: black;
+  color: white;
+  padding: 2px;
+  border-radius: 4px;
 }
 
 .d-NetworkList__Network:hover {

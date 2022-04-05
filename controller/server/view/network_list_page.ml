@@ -7,17 +7,14 @@ let service_item ({ id; name; strength; ipv4 } as service) =
     | Some s -> [ Signal_strength.html s ]
     | None -> []
   in
-  let
-    classes =
-      [ "d-NetworkList__Network" ]
-        @ if Connman.Service.is_connected service then [ "d-NetworkList__Network--Connected" ] else []
-  in
   li
     [ a
-        ~a:[ a_class classes
+        ~a:[ a_class [ "d-NetworkList__Network" ]
         ; a_href ("/network/" ^ id)
         ]
-        [ div [ txt name ]
+        [ div
+          ~a:[ a_class (if Connman.Service.is_connected service then ["d-NetworkList__Connected"] else []) ]
+          [ txt name ]
         ; (match ipv4 with
           | Some ipv4_addr ->
                 div ~a:[ a_class [ "d-NetworkList__Address" ] ] [ txt (ipv4_addr.address) ]
