@@ -83,6 +83,14 @@ elif [ "$TARGET" == "stuck" ]; then
     --arg buildBundle false \
     --arg buildDisk false)
 
+elif [ "$TARGET" == "shed-key" ]; then
+
+  (set -x; nix-build \
+    --arg kioskUrl https://shed.dividat.com/ \
+    --arg buildInstaller false \
+    --arg buildBundle false \
+    --arg buildDisk false)
+
 elif [ "$TARGET" == "lab-key" ]; then
 
   (set -x; nix-build \
