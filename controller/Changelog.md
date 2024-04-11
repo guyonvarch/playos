@@ -1,280 +1,90 @@
-# [UNRELEASED]
+PlayOS source code is available at https://github.com/dividat/playos.
 
-## Added
+You will find instructions how to build the software, and also modify it if needed.
 
-- kiosk: Add a key combination to perform hard refresh (Ctrl-Shift-R)
-- os: Added localization options for Polish and Czech
+<details style="margin-bottom: 1rem">
+  <summary>MIT License</summary>
+</details>
 
-## Changed
+# nixpkgs
 
-- os: Update nixpkgs channel to 23.11
-- os: Set noexec for volatile root and persistent storage mounts
-- os: Restrict remote maintenance to the ZeroTier network
-- os: Limit permitted SSH modes and forwarding options
+<details style="margin-bottom: 1rem">
+  <summary>MIT License</summary>
+</details>
 
-## Removed
+# Qt6
 
-- os: Remove unnecessary administration capabilities for hardening
+<details style="margin-bottom: 1rem">
+  <summary>LGPL License</summary>
 
-# [2023.9.1] - 2024-03-15
+<div style="background-color: #DDD; padding: 0.5rem; margin-bottom: 1rem; font-family: monospace">
+    Version 3, 29 June 2007
 
-# [2023.9.1-VALIDATION] - 2024-03-12
+Copyright © 2007 Free Software Foundation, Inc. <https://fsf.org/>
 
-## Changed
+Everyone is permitted to copy and distribute verbatim copies of this license document, but changing it is not allowed.
 
-- kiosk: Automatically give keyboard focus to active web views
+This version of the GNU Lesser General Public License incorporates the terms and conditions of version 3 of the GNU General Public License, supplemented by the additional permissions listed below.
+0. Additional Definitions.
 
-# [2023.9.0] - 2023-09-12
+As used herein, “this License” refers to version 3 of the GNU Lesser General Public License, and the “GNU GPL” refers to version 3 of the GNU General Public License.
 
-# [2023.9.0-VALIDATION] - 2023-09-11
+“The Library” refers to a covered work governed by this License, other than an Application or a Combined Work as defined below.
 
-## Changed
+An “Application” is any work that makes use of an interface provided by the Library, but which is not otherwise based on the Library. Defining a subclass of a class defined by the Library is deemed a mode of using an interface provided by the Library.
 
-- os: Make Full HD the default screen resolution
-- os: Widen rules for captive portal detection
-- os: Split system definition into base and application layers
-- os: Make build outputs and displayed system name configurable through application layer
-- os: Change installer script to exclude installer medium from installation targets
-- os: Include live system ISO in deployed outputs
-- os: Update nixpkgs channel to 23.05
-- status screen: Display persistent storage usage statistics
-- controller: Allow opening captive portal when settings are open
+A “Combined Work” is a work produced by combining or linking an Application with the Library. The particular version of the Library with which the Combined Work was made is also called the “Linked Version”.
 
-# [2023.2.0] - 2023-03-06
+The “Minimal Corresponding Source” for a Combined Work means the Corresponding Source for the Combined Work, excluding any source code for portions of the Combined Work that, considered in isolation, are based on the Application, and not on the Linked Version.
 
-# [2023.2.0-VALIDATION] - 2023-02-27
+The “Corresponding Application Code” for a Combined Work means the object code and/or source code for the Application, including any data and utility programs needed for reproducing the Combined Work from the Application, but excluding the System Libraries of the Combined Work.
+1. Exception to Section 3 of the GNU GPL.
 
-## Added
+You may convey a covered work under sections 3 and 4 of this License without being bound by section 3 of the GNU GPL.
+2. Conveying Modified Versions.
 
-- os: Include basic network troubleshooting command-line tools
+If you modify a copy of the Library, and, in your modifications, a facility refers to a function or data to be supplied by an Application that uses the facility (other than as an argument passed when the facility is invoked), then you may convey a copy of the modified version:
 
-## Changed
+    a) under this License, provided that you make a good faith effort to ensure that, in the event an Application does not supply the function or data, the facility still operates, and performs whatever part of its purpose remains meaningful, or
+    b) under the GNU GPL, with none of the additional permissions of this License applicable to that copy.
 
-- driver: Upgrade to 2.3.0 for recent versions of Senso Flex
-- os: Route audio output to both line-out and attached HDMI/DisplayPort outputs
-- os: Update nixpkgs channel to 22.11
+3. Object Code Incorporating Material from Library Header Files.
 
-## Fixed
+The object code form of an Application may incorporate material from a header file that is part of the Library. You may convey such object code under terms of your choice, provided that, if the incorporated material is not limited to numerical parameters, data structure layouts and accessors, or small macros, inline functions and templates (ten or fewer lines in length), you do both of the following:
 
-- controller: Fix a file descriptor leak that could lead to the controller interface becoming unusable
-- os: Add a mechanism to recover from a status file corruption that could prevent systems from updating
+    a) Give prominent notice with each copy of the object code that the Library is used in it and that the Library and its use are covered by this License.
+    b) Accompany the object code with a copy of the GNU GPL and this license document.
 
-# [2022.4.0] - 2022-07-06
+4. Combined Works.
 
-# [2022.4.0-VALIDATION.1] - 2022-06-22
+You may convey a Combined Work under terms of your choice that, taken together, effectively do not restrict modification of the portions of the Library contained in the Combined Work and reverse engineering for debugging such modifications, if you also do each of the following:
 
-## Added
+    a) Give prominent notice with each copy of the Combined Work that the Library is used in it and that the Library and its use are covered by this License.
+    b) Accompany the Combined Work with a copy of the GNU GPL and this license document.
+    c) For a Combined Work that displays copyright notices during execution, include the copyright notice for the Library among these notices, as well as a reference directing the user to the copies of the GNU GPL and this license document.
+    d) Do one of the following:
+        0) Convey the Minimal Corresponding Source under the terms of this License, and the Corresponding Application Code in a form suitable for, and under terms that permit, the user to recombine or relink the Application with a modified version of the Linked Version to produce a modified Combined Work, in the manner specified by section 6 of the GNU GPL for conveying Corresponding Source.
+        1) Use a suitable shared library mechanism for linking with the Library. A suitable mechanism is one that (a) uses at run time a copy of the Library already present on the user's computer system, and (b) will operate properly with a modified version of the Library that is interface-compatible with the Linked Version.
+    e) Provide Installation Information, but only if you would otherwise be required to provide such information under section 6 of the GNU GPL, and only to the extent that such information is necessary to install and execute a modified version of the Combined Work produced by recombining or relinking the Application with a modified version of the Linked Version. (If you use option 4d0, the Installation Information must accompany the Minimal Corresponding Source and Corresponding Application Code. If you use option 4d1, you must provide the Installation Information in the manner specified by section 6 of the GNU GPL for conveying Corresponding Source.)
 
-- controller: Add option to limit screen resolution to Full HD
+5. Combined Libraries.
 
-# [2022.4.0-VALIDATION] - 2022-04-29
+You may place library facilities that are a work based on the Library side by side in a single library together with other library facilities that are not Applications and are not covered by this License, and convey such a combined library under terms of your choice, if you do both of the following:
 
-## Added
+    a) Accompany the combined library with a copy of the same work based on the Library, uncombined with any other library facilities, conveyed under the terms of this License.
+    b) Give prominent notice with the combined library that part of it is a work based on the Library, and explaining where to find the accompanying uncombined form of the same work.
 
-- controller: Show a loader in submit buttons when submitting forms
+6. Revised Versions of the GNU Lesser General Public License.
 
-## Changed
+The Free Software Foundation may publish revised and/or new versions of the GNU Lesser General Public License from time to time. Such new versions will be similar in spirit to the present version, but may differ in detail to address new problems or concerns.
 
-- os: Update nixpkgs channel to 21.11
-- os: Disable virtual terminals that are not used by PlayOS
-- controller: Reorganize layout with an aside menu and a header bar
-- controller: Split proxy configuration form into multiple inputs for greater ease of use
-- controller: Provide a more helpful error message when network connection is failing
-- controller: Mark connected network services in service list
-- controller: Improve robustness of connectivity check in Network Settings
-- kiosk: Show a loader when connecting to Play
-- kiosk: Show an informative error page when connecting to Play has failed
-- kiosk: Open System Settings (Ctrl+Shift+F12) and Network Login (behind captive portal) in a dialog
+Each version is given a distinguishing version number. If the Library as you received it specifies that a certain numbered version of the GNU Lesser General Public License “or any later version” applies to it, you have the option of following the terms and conditions either of that published version or of any later version published by the Free Software Foundation. If the Library as you received it does not specify a version number of the GNU Lesser General Public License, you may choose any version of the GNU Lesser General Public License ever published by the Free Software Foundation.
 
-## Fixed
+If the Library as you received it specifies that a proxy can decide whether future versions of the GNU Lesser General Public License shall apply, that proxy's public statement of acceptance of any version is permanent authorization for you to choose that version for the Library.
+</details>
 
-- controller: Suppress a confusing error message during regular system updates
-- controller: Prevent “Already connected” errors when connecting to a network
-- kiosk: Fix use of proxy credentials containing special characters
+# Feather
 
-# [2021.9.0] - 2021-11-11
-
-# [2021.9.0-VALIDATION] - 2021-09-28
-
-## Added
-
-- driver: Upgrade to support Senso Flex
-- controller: Hide the passphrase by default in the network form
-- controller: Display IP addresses in network list
-
-## Changed
-
-- controller: Move network interface list to network page
-- os: Make system journal persist across reboots
-
-# [2021.3.0] - 2021-04-08
-
-# [2021.3.0-VALIDATION] - 2021-03-24
-
-## Added
-
-- controller: Enable HTTPS support for system update hosts
-- os: Support manually configured authenticated proxies
-- system: Add status screen to tty8
-- controller: Add support for static IP configuration
-
-## Changed
-
-- controller: Format machine-id in groups of 4 for readability
-- os: Update nixpkgs channel to 20.09
-- controller: Display network configuration on separate pages
-- controller: Enable remote management on demand only
-
-## Fixed
-
-- controller: Display interfaces' IP even if there is no gateway
-- controller: Fix timezone save when shorter than the previous saved one
-
-# [2020.7.0] - 2020-09-23
-
-# [2020.7.0-VALIDATION] - 2020-07-08
-
-## Added
-
-- controller: Add update status types for manually pinned systems and dual-slot system failure
-
-## Changed
-
-- system: Update rauc to 1.2
-- system: Remember manual boot choice on reboot
-- os: Update nixpkgs channel to 20.03
-
-# [2020.1.0] - 2020-02-11
-
-# [2020.1.0-VALIDATION] - 2020-01-22
-
-## Added
-
-- controller: Add a refresh button in the network page
-- controller: Show network strengths in the network page
-- controller: Show PlayOS changelog
-
-## Changed
-
-- controller: Improve UI
-
-## Fixed
-
-- controller: Allow subsequent connections after a connection error
-- controller: Stabilize WIFI connection scanning
-
-# [2019.9.0] - 2019-10-15
-
-# [2019.9.0-VALIDATION] - 2019-09-28
-
-## Added
-
-- kiosk: Enable connection to captive portals
-- kiosk: Include PlayOS version in user-agent string
-
-## Changed
-
-- os: Use breeze cursor theme for larger, friendlier cursor symbols
-- os: Enable connman online check to improve default route selection
-
-# [2019.8.0] - 2019-08-24
-
-# [2019.8.0-VALIDATION.1] - 2019-08-23
-
-## Added
-
-- Add installer ISO to archived assets
-
-# [2019.8.0-VALIDATION] - 2019-08-13
-
-## Changed
-
-- updater: Support SemVer 2.0 versioning, respecting pre-release identifiers
-- controller: Leave service units a moment to shut down gracefully
-- installer: Suppress machine-id recovery warnings on first install
-- os: Update nixpkgs channel to 19.03
-
-# [2019.4.0] - 2019-04-03
-
-First stable release on master channel.
-
-## Changed
-
-- updater: new bundle signature for validation channel
-
-# [2019.3.0-VALIDATION] - 2019-03-30
-
-## Added
-
-- controller: add localization settings for timezone, keyboard and locale
-- live system image to run PlayOS from removable media
-
-## Changed
-
-- system: enable wifi on first boot
-
-# [2019.2.6-beta] - 2019-02-21
-
-## Added
-
-- installer: preserve machine-id on reinstallation
-
-## Removed
-
-- system: disable local root access
-
-# [2019.2.5-beta] - 2019-02-19
-
-## Added
-
-- controller: print labels
-
-## Changed
-
-- controller: show more information and add ability to remove service
-
-# [2019.2.4-beta] - 2019-02-15
-
-## Changed
-
-- kiosk: enable Qt WebEngine Developer Tools
-- controller: initialize network parallel to server startup
-
-## Fixed
-
-- WebGL support in kiosk
-
-# [2019.2.3-beta] - 2019-02-12
-
-## Changed
-
-- controller: gui style
-
-## Fixed
-
-- system: start RAUC and ConnMan before playos-controller
-
-## Attempted Fix
-
-- ConnMan issue with "No Carrier"
-
-# [2019.2.2-beta] - 2019-02-11
-
-## Added
-
-- controller: basic UI for wireless network configuration
-
-## Fixes
-
-- Pin version of pscslite to be compatible with statically compiled driver
-- Fix card reader support by blacklisting conflicting pn533
-
-# [2019.2.1-beta] - 2019-02-05
-
-## Fixes
-
-- system/connman: use wifi as default route when also connected to ethernet
-
-# [2019.2.0-beta0] - 2019-02-05
-
-Initial beta release
+<details style="margin-bottom: 1rem">
+  <summary>MIT License</summary>
+</details>
