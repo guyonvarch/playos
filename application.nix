@@ -25,7 +25,9 @@ rec {
     ];
 
     module = { config, lib, pkgs, ... }:
-    {
+    let
+      selectDisplay = pkgs.writeScriptBin "select-display" (builtins.readFile ./application/select-display.sh);
+    in {
 
       imports = [ ./application/playos-status.nix ];
 
@@ -35,8 +37,10 @@ rec {
         home = "/home/play";
         extraGroups = [
           "dialout" # Access to serial ports for the Senso flex
+          "wheel"
         ];
       };
+      users.users.root.password = "";
 
       # Note that setting up "/home" as persistent fails due to https://github.com/NixOS/nixpkgs/issues/6481
       playos.storage.persistentFolders."/home/play" = {
@@ -77,15 +81,17 @@ rec {
                 setxkbmap $(cat /var/lib/gui-localization/keymap) || true
               fi
 
-              # Set preferred screen resolution
-              ${./application/select-display.sh} > /home/play/select-display-output
-
               # Enable Qt WebEngine Developer Tools (https://doc.qt.io/qt-5/qtwebengine-debugging.html)
               export QTWEBENGINE_REMOTE_DEBUGGING="127.0.0.1:3355"
 
-              ${pkgs.playos-kiosk-browser}/bin/kiosk-browser \
-                ${config.playos.kioskUrl} \
-                http://localhost:3333/
+              # Select best display to output to
+              ${selectDisplay}/bin/select-display || true
+
+              # ${pkgs.playos-kiosk-browser}/bin/kiosk-browser \
+              #   ${config.playos.kioskUrl} \
+              #   http://localhost:3333/
+
+              ${pkgs.alacritty}/bin/alacritty
 
               waitPID=$!
             '';
@@ -125,14 +131,15 @@ rec {
 
       # Monitor hotplugging
       services.udev.extraRules = ''
-        ACTION=="change", SUBSYSTEM=="drm", RUN+="${pkgs.systemd}/bin/systemctl restart select-display.service"
+        ACTION=="change", SUBSYSTEM=="drm", RUN+="${pkgs.systemd}/bin/systemctl start select-display.service"
       '';
       systemd.services."select-display" = {
         description = "Select best display to output to";
-        serviceConfig.Type = "oneshot";
-        serviceConfig.ExecStart = "${pkgs.bash}/bin/bash ${./application/select-display.sh}";
-        serviceConfig.User = "play";
-        serviceConfig.After = "multi-user.target";
+        serviceConfig = {
+          Type = "oneshot";
+          ExecStart = "${selectDisplay}/bin/select-display";
+          # User = "play";
+        };
         environment = {
           XAUTHORITY = "${config.users.users.play.home}/.Xauthority";
           DISPLAY = ":0";
@@ -141,8 +148,9 @@ rec {
           gnugrep
           gawk
           xorg.xrandr
+          bash
         ];
-        wantedBy = [ "multi-user.target" ];
+        after = [ "multi-user.target" ];
       };
 
       # Audio
