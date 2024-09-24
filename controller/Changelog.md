@@ -2,6 +2,7 @@
 
 ## Added
 
+- kiosk: Open settings with a long press on the Menu key
 - controller: Enable spatial navigation using the arrow keys
 
 # [2024.7.0] - 2024-08-02
