@@ -4,25 +4,22 @@ type t = OBus_peer.Private.t
 val daemon : unit -> t Lwt.t
 
 module Slot : sig
-
   type t =
     | SystemA
     | SystemB
 
   val t_of_string : string -> t
-
   val string_of_t : t -> string
 
-  type status =
-    { device : string
-    ; class' : string
-    ; state : string
-    (* Fields that are only available when installed via RAUC (not from installer script)*)
-    ; version : string
-    ; installed_timestamp : string
-    }
+  type status = {
+    device : string;
+    class' : string;
+    state : string;
+        (* Fields that are only available when installed via RAUC (not from installer script)*)
+    version : string;
+    installed_timestamp : string;
+  }
   [@@deriving sexp]
-
 end
 
 (** [get_booted_slot rauc] returns the currently booted slot *)
@@ -36,10 +33,10 @@ val mark_good : t -> Slot.t -> unit Lwt.t
 val mark_active : t -> Slot.t -> unit Lwt.t
 
 (** Rauc status *)
-type status =
-  { a: Slot.status
-  ; b: Slot.status
-  }
+type status = {
+  a : Slot.status;
+  b : Slot.status;
+}
 [@@deriving sexp]
 
 (** Encode status as json *)

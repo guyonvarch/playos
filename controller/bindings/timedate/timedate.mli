@@ -4,16 +4,16 @@ type t = OBus_peer.Private.t
 val daemon : unit -> t Lwt.t
 
 (** [get_available_timezones daemon] returns the available timezones in the system *)
-val get_available_timezones : t -> (string list) Lwt.t
+val get_available_timezones : t -> string list Lwt.t
 
 (** [get_current_time daemon] returns the current formatted timestamp *)
 val get_current_time : t -> string Lwt.t
 
 (** [get_active_timezone daemon] returns the currently active timezone *)
-val get_active_timezone : t -> (string option) Lwt.t
+val get_active_timezone : t -> string option Lwt.t
 
 (** [get_configured_timezone daemon] returns the configured timezone *)
-val get_configured_timezone : unit -> (string option) Lwt.t
+val get_configured_timezone : unit -> string option Lwt.t
 
 (** [set_timezone daemon timezone] sets the timezone *)
 val set_timezone : string -> unit Lwt.t

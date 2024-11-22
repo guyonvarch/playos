@@ -15,10 +15,10 @@ type result =
 
 val pretty_print_error : error -> string
 
-val request
-  :  ?proxy:Uri.t
-  -> ?headers:(string * string) list
-  -> ?data:string
-  -> ?options:string list
-  -> Uri.t
-  -> result Lwt.t
+val request :
+  ?proxy:Uri.t ->
+  ?headers:(string * string) list ->
+  ?data:string ->
+  ?options:string list ->
+  Uri.t ->
+  result Lwt.t
