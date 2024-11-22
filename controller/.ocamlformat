@@ -5,3 +5,4 @@ margin = 80
 indicate-multiline-delimiters = closing-on-separate-line
 type-decl = sparse
 doc-comments = before
+break-cases = fit-or-vertical
