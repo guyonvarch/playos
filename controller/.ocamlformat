@@ -1,0 +1,7 @@
+version = 0.26.1
+
+profile = conventional
+margin = 80
+indicate-multiline-delimiters = closing-on-separate-line
+type-decl = sparse
+doc-comments = before
