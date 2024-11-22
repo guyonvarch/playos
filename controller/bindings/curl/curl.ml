@@ -73,7 +73,10 @@ let request ?proxy ?(headers = []) ?data ?(options = []) url =
           headers
           |> List.map (fun (k, v) -> [| "--header"; k ^ ":" ^ v |])
           |> Array.concat;
-          (match data with Some d -> [| "--data"; d |] | None -> [||]);
+          ( match data with
+          | Some d -> [| "--data"; d |]
+          | None -> [||]
+          );
           Base.List.to_array options;
         ]
     )

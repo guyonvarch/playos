@@ -124,7 +124,9 @@ let header_title ?back_url ?icon ?right_action content =
     | None -> []
   in
   let right_action =
-    match right_action with Some right_action -> [ right_action ] | None -> []
+    match right_action with
+    | Some right_action -> [ right_action ]
+    | None -> []
   in
   div
     ~a:[ a_class [ "d-Header__Line" ] ]

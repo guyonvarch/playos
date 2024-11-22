@@ -29,7 +29,10 @@ module Slot = struct
     | _ -> failwith "Unexpected slot identifier."
 
   let t_of_string = of_string
-  let string_of_t = function SystemA -> "system.a" | SystemB -> "system.b"
+
+  let string_of_t = function
+    | SystemA -> "system.a"
+    | SystemB -> "system.b"
 
   type status = {
     device : string;

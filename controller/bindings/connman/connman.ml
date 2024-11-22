@@ -123,7 +123,9 @@ module Agent = struct
             List.assoc_opt "Requirement" v_ocaml
             |> Option.map OBus_value.C.(cast_single basic_string)
           in
-          match requirement_opt with Some "mandatory" -> [ k ] | _ -> []
+          match requirement_opt with
+          | Some "mandatory" -> [ k ]
+          | _ -> []
         )
         fields
     in
@@ -549,7 +551,10 @@ module Service = struct
     )
 
   let is_connected t =
-    match t.state with Ready -> true | Online -> true | _ -> false
+    match t.state with
+    | Ready -> true
+    | Online -> true
+    | _ -> false
 
   let set_property service ~name ~value =
     OBus_method.call Connman_interfaces.Net_connman_Service.m_SetProperty

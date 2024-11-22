@@ -106,7 +106,9 @@ let factory_reset_call =
 
 let other_slot =
   let open Rauc.Slot in
-  function SystemA -> SystemB | SystemB -> SystemA
+  function
+  | SystemA -> SystemB
+  | SystemB -> SystemA
 
 let suggested_action_of_state (update : Update.state) (rauc : rauc_state)
     booted_slot =

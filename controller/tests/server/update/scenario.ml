@@ -32,7 +32,11 @@ let str_match_with_magic_pat expected actual =
   let exp_regexp =
     regexp @@ String.concat ""
     @@ List.map
-         (fun p -> match p with Text a -> quote a | Delim _ -> ".*")
+         (fun p ->
+           match p with
+           | Text a -> quote a
+           | Delim _ -> ".*"
+         )
          exp_parts
   in
   string_match exp_regexp actual 0
@@ -67,8 +71,15 @@ let interpret_spec (state : Update.state) (spec : scenario_spec) =
       Lwt.return @@ Alcotest.(check bool) (specfmt spec) true rez
   | UpdateMock f -> Lwt.return @@ f ()
 
-let is_state_spec s = match s with StateReached _ -> true | _ -> false
-let is_mock_spec s = match s with UpdateMock _ -> true | _ -> false
+let is_state_spec s =
+  match s with
+  | StateReached _ -> true
+  | _ -> false
+
+let is_mock_spec s =
+  match s with
+  | UpdateMock _ -> true
+  | _ -> false
 
 let rec lwt_while cond expr =
   if cond () then

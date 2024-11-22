@@ -44,7 +44,13 @@ let test_random_failure_case =
 
   let print_t (seq_upd, seq_rauc, inp_case) =
     let fail_seq_to_str seq =
-      List.map (function true -> "x" | false -> "_") seq |> String.concat ""
+      List.map
+        (function
+          | true -> "x"
+          | false -> "_"
+          )
+        seq
+      |> String.concat ""
     in
     let test_case_descr = Helpers.slot_spec_to_string inp_case in
     Format.sprintf

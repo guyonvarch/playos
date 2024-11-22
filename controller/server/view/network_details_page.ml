@@ -17,7 +17,11 @@ let proxy_form proxy =
                     a_input_type `Text;
                     a_class [ "d-Input"; "d-Network__Input" ];
                     a_name "proxy_host";
-                    a_value (match proxy with Some { host } -> host | _ -> "");
+                    a_value
+                      ( match proxy with
+                      | Some { host } -> host
+                      | _ -> ""
+                      );
                     a_placeholder "Host";
                     a_pattern {|[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*|};
                   ]
