@@ -6,21 +6,20 @@ let log_src = Logs.Src.create "update"
 (* Version handling *)
 
 (** Type containing version information *)
-type version_info = {
-  (* the latest available version *)
-  latest : Semver.t; (* version of currently booted system *)
-  booted : Semver.t; (* version of inactive system *)
-  inactive : Semver.t;
-}
+type version_info =
+  { (* the latest available version *)
+    latest: Semver.t (* version of currently booted system *)
+  ; booted: Semver.t (* version of inactive system *)
+  ; inactive: Semver.t
+  }
 
 let sexp_of_version_info v =
   let open Sexplib in
   Sexp.(
     List
-      [
-        List [ Atom "latest"; Atom (Semver.to_string v.latest) ];
-        List [ Atom "booted"; Atom (Semver.to_string v.booted) ];
-        List [ Atom "inactive"; Atom (Semver.to_string v.inactive) ];
+      [ List [Atom "latest"; Atom (Semver.to_string v.latest)]
+      ; List [Atom "booted"; Atom (Semver.to_string v.booted)]
+      ; List [Atom "inactive"; Atom (Semver.to_string v.inactive)]
       ]
   )
 
@@ -42,13 +41,14 @@ type state =
 
 type sleep_duration = float (* seconds *)
 
-type config = {
-  error_backoff_duration : sleep_duration;
-  check_for_updates_interval : sleep_duration;
-}
+type config =
+  { error_backoff_duration: sleep_duration
+  ; check_for_updates_interval: sleep_duration
+  }
 
 module type ServiceDeps = sig
   module ClientI : Update_client.S
+
   module RaucI : Rauc_service.S
 
   val config : config
@@ -56,6 +56,7 @@ end
 
 module type UpdateService = sig
   val run : set_state:(state -> unit) -> state -> unit Lwt.t
+
   val run_step : state -> state Lwt.t
 end
 
@@ -64,7 +65,6 @@ let evaluate_version_info current_primary booted_slot version_info =
   let up_to_date_with_latest v = Semver.compare v version_info.latest >= 0 in
   let booted_up_to_date = up_to_date_with_latest version_info.booted in
   let inactive_up_to_date = up_to_date_with_latest version_info.inactive in
-
   if booted_up_to_date && inactive_up_to_date then
     (* Should not happen during the automatic update process (one partition must
        always be older than latest upstream), but can happen if e.g. a newer
@@ -106,23 +106,20 @@ module Make (Deps : ServiceDeps) : UpdateService = struct
   open Deps
 
   let sleep_error_backoff () = Lwt_unix.sleep config.error_backoff_duration
+
   let sleep_update_check () = Lwt_unix.sleep config.check_for_updates_interval
 
   (** Get version information *)
   let get_version_info () =
     let%lwt latest = ClientI.get_latest_version () >|= semver_of_string in
     let%lwt rauc_status = RaucI.get_status () in
-
     let system_a_version = rauc_status.a.version |> semver_of_string in
     let system_b_version = rauc_status.b.version |> semver_of_string in
-
     match%lwt RaucI.get_booted_slot () with
     | SystemA ->
-        { latest; booted = system_a_version; inactive = system_b_version }
-        |> return
+        {latest; booted= system_a_version; inactive= system_b_version} |> return
     | SystemB ->
-        { latest; booted = system_b_version; inactive = system_a_version }
-        |> return
+        {latest; booted= system_b_version; inactive= system_a_version} |> return
 
   (* Update mechanism process *)
 
@@ -205,25 +202,21 @@ module Make (Deps : ServiceDeps) : UpdateService = struct
   (** Finite state machine handling updates *)
   let rec run ~set_state state =
     let%lwt next_state = run_step state in
-    set_state next_state;
-    run ~set_state next_state
+    set_state next_state ; run ~set_state next_state
 end
 
 let default_config : config =
-  {
-    error_backoff_duration = 30.0;
-    check_for_updates_interval = 1. *. 60. *. 60.;
-  }
+  {error_backoff_duration= 30.0; check_for_updates_interval= 1. *. 60. *. 60.}
 
 let build_deps ~connman ~(rauc : Rauc.t) : (module ServiceDeps) Lwt.t =
   let config = default_config in
   let raucI = Rauc_service.build_module rauc in
   let clientI = Update_client.build_module connman in
-
   let module Deps = struct
     let config = config
 
     module RaucI = (val raucI)
+
     module ClientI = (val clientI)
   end in
   Lwt.return (module Deps : ServiceDeps)
@@ -234,12 +227,10 @@ let start ~connman ~(rauc : Rauc.t) =
   let () =
     Logs.info ~src:log_src (fun m -> m "update URL: %s" Config.System.update_url)
   in
-
   let service =
     let%lwt deps = build_deps ~connman ~rauc in
     let module UpdateServiceI = Make ((val deps)) in
     UpdateServiceI.run ~set_state initial_state
   in
-
   let () = Logs.info ~src:log_src (fun m -> m "Started") in
   (state_s, service)

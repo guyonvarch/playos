@@ -13,9 +13,9 @@ open Update_client
 open Update_client_mock_server
 
 let setup_log () =
-  Fmt_tty.setup_std_outputs ();
-  Logs.set_level @@ Some Logs.Debug;
-  Logs.set_reporter (Logs_fmt.reporter ());
+  Fmt_tty.setup_std_outputs () ;
+  Logs.set_level @@ Some Logs.Debug ;
+  Logs.set_reporter (Logs_fmt.reporter ()) ;
   ()
 
 type proxy_param =
@@ -30,8 +30,8 @@ let process_proxy_spec spec server_url =
   | UseMockServer ->
       (* pretend mock server is a proxy, i.e. use an invalid base_url,
          and the actual server_url for the proxy *)
-      ( server_url |> Option.some,
-        (* Note: DO NOT use https here, because curl will attempt
+      ( server_url |> Option.some
+      , (* Note: DO NOT use https here, because curl will attempt
            to CONNECT and then this whole setup doesn't work *)
         Uri.of_string "http://some-invalid-url.local/"
       )
@@ -44,7 +44,7 @@ let rec wait_for_mock_server ?(timeout = 0.2) ?(remaining_tries = 3) url =
   | Curl.RequestSuccess _ -> Lwt.return ()
   | Curl.RequestFailure err ->
       let err_msg = Curl.pretty_print_error err in
-      print_endline ("MockServer not up, err was: " ^ err_msg);
+      print_endline ("MockServer not up, err was: " ^ err_msg) ;
       if remaining_tries > 0 then
         let%lwt () = Lwt_unix.sleep timeout in
         wait_for_mock_server
@@ -63,7 +63,7 @@ let run_test_case ?(proxy = NoProxy) switch f =
   let%lwt () = wait_for_mock_server server_url in
   Lwt_switch.add_hook (Some switch) (fun () ->
       Lwt.return @@ Lwt.cancel server_task
-  );
+  ) ;
   let proxy_url, base_url =
     process_proxy_spec proxy (Uri.of_string server_url)
   in
@@ -97,9 +97,9 @@ let test_download_bundle_ok server (module Client : S) =
   Alcotest.(check bool)
     "Bundle file is downloaded and saved"
     (Sys.file_exists bundle_path)
-    true;
+    true ;
   Alcotest.(check string)
-    "Bundle contents are correct" (read_file bundle_path) bundle;
+    "Bundle contents are correct" (read_file bundle_path) bundle ;
   Lwt.return ()
 
 (* NOTE: This test checks that the client resumes the download
@@ -111,8 +111,7 @@ let test_resume_bundle_download server (module Client : S) =
   let () = server#add_bundle version bundle_contents in
   let%lwt bundle_path = Client.download version in
   Alcotest.(check string)
-    "Bundle contents are only partial" (read_file bundle_path) bundle_contents;
-
+    "Bundle contents are only partial" (read_file bundle_path) bundle_contents ;
   (* NOTE that bundle_contents is not a prefix of bundle_contents_extra !
      This is on purpose: to check that download client does not simply
      overwrite the downloaded file, otherwise we would not be testing
@@ -122,13 +121,12 @@ let test_resume_bundle_download server (module Client : S) =
   *)
   let bundle_contents_extra = "BUNDLE_CONTENTS: 111999" in
   let () = server#add_bundle version bundle_contents_extra in
-
   let%lwt bundle_path = Client.download version in
   Alcotest.(check string)
     "Bundle contents are resumed, not overwritten" (read_file bundle_path)
     (* NOTE: this is not the same as [bundle_contents_extra], it is only
        the last bytes of it beyond the length of [bundle_contents] *)
-    "BUNDLE_CONTENTS: 123999";
+    "BUNDLE_CONTENTS: 123999" ;
   Lwt.return ()
 
 (* invalid proxy URL is set in the `run_test_case` function, see below *)
@@ -142,7 +140,7 @@ let test_invalid_proxy_fail _ (module Client : S) =
           Alcotest.(check bool)
             "Curl raised an exception about invalid proxy"
             (Str.string_match (Str.regexp ".*Could not resolve proxy.*") exn 0)
-            true;
+            true ;
           Lwt.return ()
       | other_exn ->
           Alcotest.fail @@ "Got unexpected exception: "
@@ -154,10 +152,9 @@ let () =
   (* All tests cases are run with proxy setup and without to verify it works
      always *)
   let test_cases =
-    [
-      ("Get latest version", test_get_version_ok);
-      ("Download bundle", test_download_bundle_ok);
-      ("Resume download works", test_resume_bundle_download);
+    [ ("Get latest version", test_get_version_ok)
+    ; ("Download bundle", test_download_bundle_ok)
+    ; ("Resume download works", test_resume_bundle_download)
     ]
   in
   (* An extra case to check that proxy settings are honored in general *)
@@ -169,18 +166,17 @@ let () =
   in
   Lwt_main.run
   @@ Alcotest_lwt.run "Basic tests"
-       [
-         ( "without-proxy",
-           List.map
+       [ ( "without-proxy"
+         , List.map
              (fun (name, test_f) ->
                Alcotest_lwt.test_case name `Quick (fun switch () ->
                    run_test_case switch test_f
                )
              )
              test_cases
-         );
-         ( "with-proxy",
-           invalid_proxy_case
+         )
+       ; ( "with-proxy"
+         , invalid_proxy_case
            :: List.map
                 (fun (name, test_f) ->
                   Alcotest_lwt.test_case name `Quick (fun switch () ->
@@ -188,5 +184,5 @@ let () =
                   )
                 )
                 test_cases
-         );
+         )
        ]

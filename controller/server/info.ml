@@ -2,15 +2,15 @@ open Lwt
 
 let log_src = Logs.Src.create "info"
 
-type t = {
-  app : string;
-  version : string;
-  update_url : string;
-  kiosk_url : string;
-  machine_id : string;
-  zerotier_address : string option;
-  local_time : string;
-}
+type t =
+  { app: string
+  ; version: string
+  ; update_url: string
+  ; kiosk_url: string
+  ; machine_id: string
+  ; zerotier_address: string option
+  ; local_time: string
+  }
 
 include Config.System
 
@@ -19,7 +19,7 @@ let rec grouped n s =
   let l = String.length s in
   if n <= 0 then invalid_arg "Group size must be above 0"
   else if l = 0 then []
-  else if l <= n then [ s ]
+  else if l <= n then [s]
   else List.cons (String.sub s 0 n) (grouped n (String.sub s n (l - n)))
 
 let get () =
@@ -46,13 +46,12 @@ let get () =
     | None -> return "No timezone"
   in
   let local_time = current_time ^ " (" ^ timezone ^ ")" in
-  {
-    app = "PlayOS Controller";
-    version;
-    update_url;
-    kiosk_url;
-    machine_id;
-    zerotier_address;
-    local_time;
+  { app= "PlayOS Controller"
+  ; version
+  ; update_url
+  ; kiosk_url
+  ; machine_id
+  ; zerotier_address
+  ; local_time
   }
   |> return

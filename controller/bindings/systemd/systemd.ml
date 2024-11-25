@@ -14,7 +14,7 @@ module Manager = struct
     let peer =
       OBus_peer.make ~connection:system_bus ~name:"org.freedesktop.systemd1"
     in
-    OBus_proxy.make ~peer ~path:[ "org"; "freedesktop"; "systemd1" ] |> return
+    OBus_proxy.make ~peer ~path:["org"; "freedesktop"; "systemd1"] |> return
 
   type system_state =
     | Initializing
@@ -82,10 +82,15 @@ module Org_freedesktop_systemd1_Manager = struct
   open Org_freedesktop_systemd1_Manager
 
   let version proxy = OBus_property.make p_Version proxy
+
   let features proxy = OBus_property.make p_Features proxy
+
   let virtualization proxy = OBus_property.make p_Virtualization proxy
+
   let architecture proxy = OBus_property.make p_Architecture proxy
+
   let tainted proxy = OBus_property.make p_Tainted proxy
+
   let firmware_timestamp proxy = OBus_property.make p_FirmwareTimestamp proxy
 
   let firmware_timestamp_monotonic proxy =
@@ -153,6 +158,7 @@ module Org_freedesktop_systemd1_Manager = struct
     OBus_property.make p_UnitsLoadFinishTimestampMonotonic proxy
 
   let log_level proxy = OBus_property.make p_LogLevel proxy
+
   let log_target proxy = OBus_property.make p_LogTarget proxy
 
   let nnames proxy =
@@ -181,9 +187,13 @@ module Org_freedesktop_systemd1_Manager = struct
       (OBus_property.make p_NFailedJobs proxy)
 
   let progress proxy = OBus_property.make p_Progress proxy
+
   let environment proxy = OBus_property.make p_Environment proxy
+
   let confirm_spawn proxy = OBus_property.make p_ConfirmSpawn proxy
+
   let show_status proxy = OBus_property.make p_ShowStatus proxy
+
   let unit_path proxy = OBus_property.make p_UnitPath proxy
 
   let default_standard_output proxy =
@@ -199,8 +209,11 @@ module Org_freedesktop_systemd1_Manager = struct
     OBus_property.make p_ShutdownWatchdogUSec proxy
 
   let service_watchdogs proxy = OBus_property.make p_ServiceWatchdogs proxy
+
   let control_group proxy = OBus_property.make p_ControlGroup proxy
+
   let system_state proxy = OBus_property.make p_SystemState proxy
+
   let exit_code proxy = OBus_property.make p_ExitCode proxy
 
   let default_timer_accuracy_usec proxy =
@@ -270,7 +283,9 @@ module Org_freedesktop_systemd1_Manager = struct
     OBus_property.make p_DefaultLimitNOFILESoft proxy
 
   let default_limit_as proxy = OBus_property.make p_DefaultLimitAS proxy
+
   let default_limit_assoft proxy = OBus_property.make p_DefaultLimitASSoft proxy
+
   let default_limit_nproc proxy = OBus_property.make p_DefaultLimitNPROC proxy
 
   let default_limit_nprocsoft proxy =
@@ -315,6 +330,7 @@ module Org_freedesktop_systemd1_Manager = struct
     OBus_property.make p_DefaultLimitRTTIMESoft proxy
 
   let default_tasks_max proxy = OBus_property.make p_DefaultTasksMax proxy
+
   let timer_slack_nsec proxy = OBus_property.make p_TimerSlackNSec proxy
 
   let get_unit proxy x1 =
@@ -415,6 +431,7 @@ module Org_freedesktop_systemd1_Manager = struct
     OBus_method.call m_SetUnitProperties proxy (x1, x2, x3)
 
   let ref_unit proxy x1 = OBus_method.call m_RefUnit proxy x1
+
   let unref_unit proxy x1 = OBus_method.call m_UnrefUnit proxy x1
 
   let start_transient_unit proxy x1 x2 x3 x4 =
@@ -447,12 +464,12 @@ module Org_freedesktop_systemd1_Manager = struct
     let x1 =
       List.map
         (fun (x1, x2, x3, x4, x5, x6) ->
-          ( Int32.to_int x1,
-            x2,
-            x3,
-            x4,
-            OBus_proxy.make ~peer:(OBus_context.sender context) ~path:x5,
-            OBus_proxy.make ~peer:(OBus_context.sender context) ~path:x6
+          ( Int32.to_int x1
+          , x2
+          , x3
+          , x4
+          , OBus_proxy.make ~peer:(OBus_context.sender context) ~path:x5
+          , OBus_proxy.make ~peer:(OBus_context.sender context) ~path:x6
           )
         )
         x1
@@ -467,12 +484,12 @@ module Org_freedesktop_systemd1_Manager = struct
     let x1 =
       List.map
         (fun (x1, x2, x3, x4, x5, x6) ->
-          ( Int32.to_int x1,
-            x2,
-            x3,
-            x4,
-            OBus_proxy.make ~peer:(OBus_context.sender context) ~path:x5,
-            OBus_proxy.make ~peer:(OBus_context.sender context) ~path:x6
+          ( Int32.to_int x1
+          , x2
+          , x3
+          , x4
+          , OBus_proxy.make ~peer:(OBus_context.sender context) ~path:x5
+          , OBus_proxy.make ~peer:(OBus_context.sender context) ~path:x6
           )
         )
         x1
@@ -484,6 +501,7 @@ module Org_freedesktop_systemd1_Manager = struct
     OBus_method.call m_CancelJob proxy x1
 
   let clear_jobs proxy = OBus_method.call m_ClearJobs proxy ()
+
   let reset_failed proxy = OBus_method.call m_ResetFailed proxy ()
 
   let list_units proxy =
@@ -491,16 +509,16 @@ module Org_freedesktop_systemd1_Manager = struct
     let x1 =
       List.map
         (fun (x1, x2, x3, x4, x5, x6, x7, x8, x9, x10) ->
-          ( x1,
-            x2,
-            x3,
-            x4,
-            x5,
-            x6,
-            OBus_proxy.make ~peer:(OBus_context.sender context) ~path:x7,
-            Int32.to_int x8,
-            x9,
-            OBus_proxy.make ~peer:(OBus_context.sender context) ~path:x10
+          ( x1
+          , x2
+          , x3
+          , x4
+          , x5
+          , x6
+          , OBus_proxy.make ~peer:(OBus_context.sender context) ~path:x7
+          , Int32.to_int x8
+          , x9
+          , OBus_proxy.make ~peer:(OBus_context.sender context) ~path:x10
           )
         )
         x1
@@ -514,16 +532,16 @@ module Org_freedesktop_systemd1_Manager = struct
     let x1 =
       List.map
         (fun (x1, x2, x3, x4, x5, x6, x7, x8, x9, x10) ->
-          ( x1,
-            x2,
-            x3,
-            x4,
-            x5,
-            x6,
-            OBus_proxy.make ~peer:(OBus_context.sender context) ~path:x7,
-            Int32.to_int x8,
-            x9,
-            OBus_proxy.make ~peer:(OBus_context.sender context) ~path:x10
+          ( x1
+          , x2
+          , x3
+          , x4
+          , x5
+          , x6
+          , OBus_proxy.make ~peer:(OBus_context.sender context) ~path:x7
+          , Int32.to_int x8
+          , x9
+          , OBus_proxy.make ~peer:(OBus_context.sender context) ~path:x10
           )
         )
         x1
@@ -537,16 +555,16 @@ module Org_freedesktop_systemd1_Manager = struct
     let x1 =
       List.map
         (fun (x1, x2, x3, x4, x5, x6, x7, x8, x9, x10) ->
-          ( x1,
-            x2,
-            x3,
-            x4,
-            x5,
-            x6,
-            OBus_proxy.make ~peer:(OBus_context.sender context) ~path:x7,
-            Int32.to_int x8,
-            x9,
-            OBus_proxy.make ~peer:(OBus_context.sender context) ~path:x10
+          ( x1
+          , x2
+          , x3
+          , x4
+          , x5
+          , x6
+          , OBus_proxy.make ~peer:(OBus_context.sender context) ~path:x7
+          , Int32.to_int x8
+          , x9
+          , OBus_proxy.make ~peer:(OBus_context.sender context) ~path:x10
           )
         )
         x1
@@ -560,16 +578,16 @@ module Org_freedesktop_systemd1_Manager = struct
     let x1 =
       List.map
         (fun (x1, x2, x3, x4, x5, x6, x7, x8, x9, x10) ->
-          ( x1,
-            x2,
-            x3,
-            x4,
-            x5,
-            x6,
-            OBus_proxy.make ~peer:(OBus_context.sender context) ~path:x7,
-            Int32.to_int x8,
-            x9,
-            OBus_proxy.make ~peer:(OBus_context.sender context) ~path:x10
+          ( x1
+          , x2
+          , x3
+          , x4
+          , x5
+          , x6
+          , OBus_proxy.make ~peer:(OBus_context.sender context) ~path:x7
+          , Int32.to_int x8
+          , x9
+          , OBus_proxy.make ~peer:(OBus_context.sender context) ~path:x10
           )
         )
         x1
@@ -581,12 +599,12 @@ module Org_freedesktop_systemd1_Manager = struct
     let x1 =
       List.map
         (fun (x1, x2, x3, x4, x5, x6) ->
-          ( Int32.to_int x1,
-            x2,
-            x3,
-            x4,
-            OBus_proxy.make ~peer:(OBus_context.sender context) ~path:x5,
-            OBus_proxy.make ~peer:(OBus_context.sender context) ~path:x6
+          ( Int32.to_int x1
+          , x2
+          , x3
+          , x4
+          , OBus_proxy.make ~peer:(OBus_context.sender context) ~path:x5
+          , OBus_proxy.make ~peer:(OBus_context.sender context) ~path:x6
           )
         )
         x1
@@ -594,21 +612,32 @@ module Org_freedesktop_systemd1_Manager = struct
     return x1
 
   let subscribe proxy = OBus_method.call m_Subscribe proxy ()
+
   let unsubscribe proxy = OBus_method.call m_Unsubscribe proxy ()
+
   let dump proxy = OBus_method.call m_Dump proxy ()
 
   let dump_by_file_descriptor proxy =
     OBus_method.call m_DumpByFileDescriptor proxy ()
 
   let reload proxy = OBus_method.call m_Reload proxy ()
+
   let reexecute proxy = OBus_method.call m_Reexecute proxy ()
+
   let exit proxy = OBus_method.call m_Exit proxy ()
+
   let reboot proxy = OBus_method.call m_Reboot proxy ()
+
   let power_off proxy = OBus_method.call m_PowerOff proxy ()
+
   let halt proxy = OBus_method.call m_Halt proxy ()
+
   let kexec proxy = OBus_method.call m_KExec proxy ()
+
   let switch_root proxy x1 x2 = OBus_method.call m_SwitchRoot proxy (x1, x2)
+
   let set_environment proxy x1 = OBus_method.call m_SetEnvironment proxy x1
+
   let unset_environment proxy x1 = OBus_method.call m_UnsetEnvironment proxy x1
 
   let unset_and_set_environment proxy x1 x2 =
@@ -713,7 +742,9 @@ module Org_freedesktop_systemd1_Manager = struct
       (OBus_signal.make s_JobRemoved proxy)
 
   let startup_finished proxy = OBus_signal.make s_StartupFinished proxy
+
   let unit_files_changed proxy = OBus_signal.make s_UnitFilesChanged proxy
+
   let reloading proxy = OBus_signal.make s_Reloading proxy
 end
 
@@ -721,41 +752,72 @@ module Org_freedesktop_systemd1_Unit = struct
   open Org_freedesktop_systemd1_Unit
 
   let id proxy = OBus_property.make p_Id proxy
+
   let names proxy = OBus_property.make p_Names proxy
+
   let following proxy = OBus_property.make p_Following proxy
+
   let requires proxy = OBus_property.make p_Requires proxy
+
   let requisite proxy = OBus_property.make p_Requisite proxy
+
   let wants proxy = OBus_property.make p_Wants proxy
+
   let binds_to proxy = OBus_property.make p_BindsTo proxy
+
   let part_of proxy = OBus_property.make p_PartOf proxy
+
   let required_by proxy = OBus_property.make p_RequiredBy proxy
+
   let requisite_of proxy = OBus_property.make p_RequisiteOf proxy
+
   let wanted_by proxy = OBus_property.make p_WantedBy proxy
+
   let bound_by proxy = OBus_property.make p_BoundBy proxy
+
   let consists_of proxy = OBus_property.make p_ConsistsOf proxy
+
   let conflicts proxy = OBus_property.make p_Conflicts proxy
+
   let conflicted_by proxy = OBus_property.make p_ConflictedBy proxy
+
   let before proxy = OBus_property.make p_Before proxy
+
   let after proxy = OBus_property.make p_After proxy
+
   let on_failure proxy = OBus_property.make p_OnFailure proxy
+
   let triggers proxy = OBus_property.make p_Triggers proxy
+
   let triggered_by proxy = OBus_property.make p_TriggeredBy proxy
+
   let propagates_reload_to proxy = OBus_property.make p_PropagatesReloadTo proxy
 
   let reload_propagated_from proxy =
     OBus_property.make p_ReloadPropagatedFrom proxy
 
   let joins_namespace_of proxy = OBus_property.make p_JoinsNamespaceOf proxy
+
   let requires_mounts_for proxy = OBus_property.make p_RequiresMountsFor proxy
+
   let documentation proxy = OBus_property.make p_Documentation proxy
+
   let description proxy = OBus_property.make p_Description proxy
+
   let load_state proxy = OBus_property.make p_LoadState proxy
+
   let active_state proxy = OBus_property.make p_ActiveState proxy
+
   let sub_state proxy = OBus_property.make p_SubState proxy
+
   let fragment_path proxy = OBus_property.make p_FragmentPath proxy
+
   let source_path proxy = OBus_property.make p_SourcePath proxy
+
   let drop_in_paths proxy = OBus_property.make p_DropInPaths proxy
+
   let unit_file_state proxy = OBus_property.make p_UnitFileState proxy
+
   let unit_file_preset proxy = OBus_property.make p_UnitFilePreset proxy
 
   let state_change_timestamp proxy =
@@ -789,16 +851,19 @@ module Org_freedesktop_systemd1_Unit = struct
     OBus_property.make p_InactiveEnterTimestampMonotonic proxy
 
   let can_start proxy = OBus_property.make p_CanStart proxy
+
   let can_stop proxy = OBus_property.make p_CanStop proxy
+
   let can_reload proxy = OBus_property.make p_CanReload proxy
+
   let can_isolate proxy = OBus_property.make p_CanIsolate proxy
 
   let job proxy =
     OBus_property.map_r_with_context
       (fun context x ->
         (fun (x1, x2) ->
-          ( Int32.to_int x1,
-            OBus_proxy.make ~peer:(OBus_context.sender context) ~path:x2
+          ( Int32.to_int x1
+          , OBus_proxy.make ~peer:(OBus_context.sender context) ~path:x2
           )
         )
           x
@@ -806,16 +871,22 @@ module Org_freedesktop_systemd1_Unit = struct
       (OBus_property.make p_Job proxy)
 
   let stop_when_unneeded proxy = OBus_property.make p_StopWhenUnneeded proxy
+
   let refuse_manual_start proxy = OBus_property.make p_RefuseManualStart proxy
+
   let refuse_manual_stop proxy = OBus_property.make p_RefuseManualStop proxy
+
   let allow_isolate proxy = OBus_property.make p_AllowIsolate proxy
 
   let default_dependencies proxy =
     OBus_property.make p_DefaultDependencies proxy
 
   let on_failure_job_mode proxy = OBus_property.make p_OnFailureJobMode proxy
+
   let ignore_on_isolate proxy = OBus_property.make p_IgnoreOnIsolate proxy
+
   let need_daemon_reload proxy = OBus_property.make p_NeedDaemonReload proxy
+
   let job_timeout_usec proxy = OBus_property.make p_JobTimeoutUSec proxy
 
   let job_running_timeout_usec proxy =
@@ -827,7 +898,9 @@ module Org_freedesktop_systemd1_Unit = struct
     OBus_property.make p_JobTimeoutRebootArgument proxy
 
   let condition_result proxy = OBus_property.make p_ConditionResult proxy
+
   let assert_result proxy = OBus_property.make p_AssertResult proxy
+
   let condition_timestamp proxy = OBus_property.make p_ConditionTimestamp proxy
 
   let condition_timestamp_monotonic proxy =
@@ -857,7 +930,9 @@ module Org_freedesktop_systemd1_Unit = struct
       (OBus_property.make p_Asserts proxy)
 
   let load_error proxy = OBus_property.make p_LoadError proxy
+
   let transient proxy = OBus_property.make p_Transient proxy
+
   let perpetual proxy = OBus_property.make p_Perpetual proxy
 
   let start_limit_interval_usec proxy =
@@ -869,10 +944,15 @@ module Org_freedesktop_systemd1_Unit = struct
       (OBus_property.make p_StartLimitBurst proxy)
 
   let start_limit_action proxy = OBus_property.make p_StartLimitAction proxy
+
   let failure_action proxy = OBus_property.make p_FailureAction proxy
+
   let success_action proxy = OBus_property.make p_SuccessAction proxy
+
   let reboot_argument proxy = OBus_property.make p_RebootArgument proxy
+
   let invocation_id proxy = OBus_property.make p_InvocationID proxy
+
   let collect_mode proxy = OBus_property.make p_CollectMode proxy
 
   let start proxy x1 =
@@ -924,5 +1004,6 @@ module Org_freedesktop_systemd1_Unit = struct
     OBus_method.call m_SetProperties proxy (x1, x2)
 
   let ref proxy = OBus_method.call m_Ref proxy ()
+
   let unref proxy = OBus_method.call m_Unref proxy ()
 end

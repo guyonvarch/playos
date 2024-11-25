@@ -41,7 +41,6 @@ let test_random_failure_case =
     QCheck2.Gen.triple rand_failure_sequence_upd_client
       rand_failure_sequence_rauc rand_spec
   in
-
   let print_t (seq_upd, seq_rauc, inp_case) =
     let fail_seq_to_str seq =
       List.map
@@ -67,9 +66,8 @@ let test_random_failure_case =
     let failure_gen_upd = failure_seq_to_f seq_upd in
     let failure_gen_rauc = failure_seq_to_f seq_rauc in
     let test_config =
-      {
-        Update.error_backoff_duration = 0.001;
-        Update.check_for_updates_interval = 0.002;
+      { Update.error_backoff_duration= 0.001
+      ; Update.check_for_updates_interval= 0.002
       }
     in
     let mocks =
@@ -87,7 +85,7 @@ let test_random_failure_case =
       @@ List.of_seq (Queue.to_seq state_seq)
     in
     let rec do_while ?(c = 0) loop_lim cur_state =
-      Queue.push cur_state state_seq;
+      Queue.push cur_state state_seq ;
       let out = run cur_state in
       match out with
       | Error e ->
@@ -102,7 +100,7 @@ let test_random_failure_case =
             (Printexc.get_backtrace ())
             (state_seq_to_str state_seq)
       | Ok Update.GettingVersionInfo ->
-          Queue.push Update.GettingVersionInfo state_seq;
+          Queue.push Update.GettingVersionInfo state_seq ;
           true
       | Ok state ->
           if c < loop_lim then do_while ~c:(c + 1) loop_lim state
@@ -120,14 +118,12 @@ let test_random_failure_case =
     ~print:print_t gen test_check
 
 let () =
-  let argv_with_verbose = Array.append Sys.argv [| "--verbose" |] in
+  let argv_with_verbose = Array.append Sys.argv [|"--verbose"|] in
   Alcotest.run ~argv:argv_with_verbose ~and_exit:false
     "UpdateService qcheck/prop tests"
-    [
-      ( "Fault injection test",
-        [
-          QCheck_alcotest.to_alcotest ~verbose:true ~long:true
-            test_random_failure_case;
+    [ ( "Fault injection test"
+      , [ QCheck_alcotest.to_alcotest ~verbose:true ~long:true
+            test_random_failure_case
         ]
-      );
+      )
     ]

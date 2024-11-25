@@ -34,13 +34,13 @@ module Slot = struct
     | SystemA -> "system.a"
     | SystemB -> "system.b"
 
-  type status = {
-    device : string;
-    class' : string;
-    state : string;
-    version : string;
-    installed_timestamp : string;
-  }
+  type status =
+    { device: string
+    ; class': string
+    ; state: string
+    ; version: string
+    ; installed_timestamp: string
+    }
   [@@deriving sexp]
 end
 
@@ -58,12 +58,13 @@ let mark_slot daemon slot status =
   else Lwt.fail_with "Wrong slot marked."
 
 let mark_good daemon slot = mark_slot daemon slot "good"
+
 let mark_active daemon slot = mark_slot daemon slot "active"
 
-type status = {
-  a : Slot.status;
-  b : Slot.status;
-}
+type status =
+  { a: Slot.status
+  ; b: Slot.status
+  }
 [@@deriving sexp]
 
 let json_of_status status = status |> sexp_of_status |> Ezjsonm.t_of_sexp
@@ -77,12 +78,11 @@ let slot_status_of_obus (o : (string * OBus_value.V.single) list) : Slot.status
     | Some (Basic (String s)) -> s
     | _ -> failwith (Format.sprintf "could not get string from field %s" key)
   in
-  {
-    device = get_string "device" o;
-    class' = get_string "class" o;
-    state = get_string "state" o;
-    version = get_string "bundle.version" o;
-    installed_timestamp = get_string "installed.timestamp" o;
+  { device= get_string "device" o
+  ; class'= get_string "class" o
+  ; state= get_string "state" o
+  ; version= get_string "bundle.version" o
+  ; installed_timestamp= get_string "installed.timestamp" o
   }
 
 let get_status daemon =
@@ -90,9 +90,8 @@ let get_status daemon =
     OBus_method.call De_pengutronix_rauc_Installer.m_GetSlotStatus
       (proxy daemon) ()
   in
-  {
-    a = slot_status_of_obus (List.assoc "system.a" status_assoc);
-    b = slot_status_of_obus (List.assoc "system.b" status_assoc);
+  { a= slot_status_of_obus (List.assoc "system.a" status_assoc)
+  ; b= slot_status_of_obus (List.assoc "system.b" status_assoc)
   }
   |> return
 
@@ -128,38 +127,46 @@ let install daemon source =
 (* Auto generated with obus-gen-client *)
 module De_pengutronix_rauc_Installer : sig
   val install : OBus_proxy.t -> source:string -> unit Lwt.t
+
   val info : OBus_proxy.t -> bundle:string -> (string * string) Lwt.t
 
   val mark :
-    OBus_proxy.t ->
-    state:string ->
-    slot_identifier:string ->
-    (string * string) Lwt.t
+       OBus_proxy.t
+    -> state:string
+    -> slot_identifier:string
+    -> (string * string) Lwt.t
 
   val get_slot_status :
     OBus_proxy.t -> (string * (string * OBus_value.V.single) list) list Lwt.t
 
   val get_primary : OBus_proxy.t -> string Lwt.t
+
   val completed : OBus_proxy.t -> int OBus_signal.t
-  val operation : OBus_proxy.t -> (string, [ `readable ]) OBus_property.t
-  val last_error : OBus_proxy.t -> (string, [ `readable ]) OBus_property.t
+
+  val operation : OBus_proxy.t -> (string, [`readable]) OBus_property.t
+
+  val last_error : OBus_proxy.t -> (string, [`readable]) OBus_property.t
 
   val progress :
-    OBus_proxy.t -> (int * string * int, [ `readable ]) OBus_property.t
+    OBus_proxy.t -> (int * string * int, [`readable]) OBus_property.t
 
-  val compatible : OBus_proxy.t -> (string, [ `readable ]) OBus_property.t
-  val variant : OBus_proxy.t -> (string, [ `readable ]) OBus_property.t
-  val boot_slot : OBus_proxy.t -> (string, [ `readable ]) OBus_property.t
+  val compatible : OBus_proxy.t -> (string, [`readable]) OBus_property.t
+
+  val variant : OBus_proxy.t -> (string, [`readable]) OBus_property.t
+
+  val boot_slot : OBus_proxy.t -> (string, [`readable]) OBus_property.t
 end = struct
   open De_pengutronix_rauc_Installer
 
   let install proxy ~source = OBus_method.call m_Install proxy source
+
   let info proxy ~bundle = OBus_method.call m_Info proxy bundle
 
   let mark proxy ~state ~slot_identifier =
     OBus_method.call m_Mark proxy (state, slot_identifier)
 
   let get_slot_status proxy = OBus_method.call m_GetSlotStatus proxy ()
+
   let get_primary proxy = OBus_method.call m_GetPrimary proxy ()
 
   let completed proxy =
@@ -171,6 +178,7 @@ end = struct
       (OBus_signal.make s_Completed proxy)
 
   let operation proxy = OBus_property.make p_Operation proxy
+
   let last_error proxy = OBus_property.make p_LastError proxy
 
   let progress proxy =
@@ -179,6 +187,8 @@ end = struct
       (OBus_property.make p_Progress proxy)
 
   let compatible proxy = OBus_property.make p_Compatible proxy
+
   let variant proxy = OBus_property.make p_Variant proxy
+
   let boot_slot proxy = OBus_property.make p_BootSlot proxy
 end

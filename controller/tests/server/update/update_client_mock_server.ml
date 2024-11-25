@@ -16,17 +16,17 @@ let get_random_available_port () =
   let () = Unix.close sock in
   (Unix.string_of_inet_addr real_addr, real_port)
 
-type state = {
-  latest_version : string;
-  available_bundles : (string, string) Hashtbl.t;
-}
+type state =
+  { latest_version: string
+  ; available_bundles: (string, string) Hashtbl.t
+  }
 
 type range = int Option.t * int Option.t
 
 let mock_server () =
   object (self)
     val mutable state =
-      ref { latest_version = "0.0.0"; available_bundles = Hashtbl.create 5 }
+      ref {latest_version= "0.0.0"; available_bundles= Hashtbl.create 5}
 
     method add_bundle vsn contents =
       Hashtbl.add !state.available_bundles vsn contents
@@ -34,8 +34,7 @@ let mock_server () =
     method remove_bundle vsn contents =
       Hashtbl.remove !state.available_bundles vsn
 
-    method set_latest_version vsn =
-      state := { !state with latest_version = vsn }
+    method set_latest_version vsn = state := {!state with latest_version= vsn}
 
     method private get_latest_handler _req =
       let resp = Response.of_string_body !state.latest_version in
@@ -46,20 +45,20 @@ let mock_server () =
       let range = Cohttp.Header.get headers "Range" in
       match range with
       | Some range_str -> (
-          try
-            let regex = Str.regexp "bytes=\\([0-9]*\\)-\\([0-9]*\\)" in
-            let m = Str.string_match regex range_str 0 in
-            let r_str_to_opt s =
-              if String.length s > 0 then Some (int_of_string s) else None
-            in
-            if m then
-              let range_start = Str.matched_group 1 range_str in
-              let range_end = Str.matched_group 2 range_str in
-              (r_str_to_opt range_start, r_str_to_opt range_end)
-            else failwith @@ "Unsupported range string: " ^ range_str
-          with e ->
-            failwith @@ "Failed to parse range headers: " ^ Printexc.to_string e
-        )
+        try
+          let regex = Str.regexp "bytes=\\([0-9]*\\)-\\([0-9]*\\)" in
+          let m = Str.string_match regex range_str 0 in
+          let r_str_to_opt s =
+            if String.length s > 0 then Some (int_of_string s) else None
+          in
+          if m then
+            let range_start = Str.matched_group 1 range_str in
+            let range_end = Str.matched_group 2 range_str in
+            (r_str_to_opt range_start, r_str_to_opt range_end)
+          else failwith @@ "Unsupported range string: " ^ range_str
+        with e ->
+          failwith @@ "Failed to parse range headers: " ^ Printexc.to_string e
+      )
       | None -> (None, None)
 
     method private range_resp (range_start, range_end) bundle =
@@ -77,23 +76,22 @@ let mock_server () =
       let resp =
         match bundle with
         | Some bund -> (
-            match range with
-            | None, None -> Response.of_string_body bund
-            | _ ->
-                let bundle_trunc, (b_start, b_end, b_total) =
-                  self#range_resp range bund
-                in
-                let body = bundle_trunc |> Bytes.to_string |> Body.of_string in
-                let headers =
-                  Cohttp.Header.of_list
-                    [
-                      ( "Content-Range",
-                        Format.sprintf "bytes %d-%d/%d" b_start b_end b_total
-                      );
-                    ]
-                in
-                Response.create ~headers ~body ()
-          )
+          match range with
+          | None, None -> Response.of_string_body bund
+          | _ ->
+              let bundle_trunc, (b_start, b_end, b_total) =
+                self#range_resp range bund
+              in
+              let body = bundle_trunc |> Bytes.to_string |> Body.of_string in
+              let headers =
+                Cohttp.Header.of_list
+                  [ ( "Content-Range"
+                    , Format.sprintf "bytes %d-%d/%d" b_start b_end b_total
+                    )
+                  ]
+              in
+              Response.create ~headers ~body ()
+        )
         | None ->
             Response.of_string_body ~code:`Not_found "Bundle version not found"
       in

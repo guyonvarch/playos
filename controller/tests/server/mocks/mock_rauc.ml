@@ -1,18 +1,17 @@
 open Rauc
 
-type state = {
-  mutable rauc_status : Rauc.status;
-  mutable primary_slot : Slot.t option;
-  mutable booted_slot : Slot.t;
-}
+type state =
+  { mutable rauc_status: Rauc.status
+  ; mutable primary_slot: Slot.t option
+  ; mutable booted_slot: Slot.t
+  }
 
 let some_status : Rauc.Slot.status =
-  {
-    device = "Device";
-    state = "Good";
-    class' = "class";
-    version = "0.0.0";
-    installed_timestamp = "2023-01-01T00:00:00Z";
+  { device= "Device"
+  ; state= "Good"
+  ; class'= "class"
+  ; version= "0.0.0"
+  ; installed_timestamp= "2023-01-01T00:00:00Z"
   }
 
 class mock failure_generator =
@@ -23,21 +22,18 @@ class mock failure_generator =
   in
   object (self)
     val state : state =
-      {
-        rauc_status = { a = some_status; b = some_status };
-        primary_slot = None;
-        booted_slot = Slot.SystemA;
+      { rauc_status= {a= some_status; b= some_status}
+      ; primary_slot= None
+      ; booted_slot= Slot.SystemA
       }
 
     method set_status slot status =
       match slot with
-      | Slot.SystemA ->
-          state.rauc_status <- { state.rauc_status with a = status }
-      | Slot.SystemB ->
-          state.rauc_status <- { state.rauc_status with b = status }
+      | Slot.SystemA -> state.rauc_status <- {state.rauc_status with a= status}
+      | Slot.SystemB -> state.rauc_status <- {state.rauc_status with b= status}
 
     method set_version slot version =
-      self#set_status slot { (self#get_slot_status slot) with version }
+      self#set_status slot {(self#get_slot_status slot) with version}
 
     method get_status () = state.rauc_status |> return
 
@@ -47,8 +43,11 @@ class mock failure_generator =
       | Slot.SystemB -> state.rauc_status.b
 
     method set_primary some_slot = state.primary_slot <- some_slot
+
     method get_primary () = state.primary_slot |> return
+
     method set_booted_slot slot = state.booted_slot <- slot
+
     method get_booted_slot () = return state.booted_slot
 
     method private extract_version bundle_path =
@@ -76,7 +75,7 @@ class mock failure_generator =
 
     method install (bundle_path : string) : unit Lwt.t =
       let vsn = self#extract_version bundle_path in
-      self#check_if_bundle_is_valid bundle_path vsn;
+      self#check_if_bundle_is_valid bundle_path vsn ;
       let%lwt booted_slot = self#get_booted_slot () in
       let other_slot =
         match booted_slot with
@@ -84,7 +83,7 @@ class mock failure_generator =
         | Slot.SystemB -> Slot.SystemA
       in
       (* "install" into non-booted slot *)
-      let () = self#set_status other_slot { some_status with version = vsn } in
+      let () = self#set_status other_slot {some_status with version= vsn} in
       (* Note: UpdateService or RAUC bindings do not explicitly set the
          primary, but it is part of RAUC's install process, so we simulate it
          here too. *)
@@ -96,9 +95,13 @@ class mock failure_generator =
     method to_module =
       (module struct
         let get_status = self#get_status
+
         let get_booted_slot = self#get_booted_slot
+
         let mark_good = self#mark_good
+
         let get_primary = self#get_primary
+
         let install = self#install
       end : Rauc_service.S
     )

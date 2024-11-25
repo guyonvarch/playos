@@ -3,7 +3,9 @@
 *)
 
 type action_descr = string
+
 type action_check = Update.state -> bool Lwt.t
+
 type mock_update = unit -> unit
 
 type scenario_spec =
@@ -92,11 +94,9 @@ let check_state expected_state_sequence prev_state cur_state =
   (* after a callback first spec should always be the next state we expect *)
   if not (is_state_spec spec) then
     failwith @@ "Expected a state spec, but got " ^ specfmt spec
-    ^ " - bad spec?";
-
+    ^ " - bad spec?" ;
   (* check if state spec matches the prev_state (i.e. initial state) *)
   let%lwt () = interpret_spec prev_state spec in
-
   (* progress forward until we either reach the end or we hit a state
      spec, which means we have to progress the state machine *)
   lwt_while
@@ -137,17 +137,15 @@ let scenario_from_system_spec ?(booted_slot = Rauc.Slot.SystemA)
     ?(primary_slot = Some Rauc.Slot.SystemA)
     ~(input_versions : Update.version_info) (expected_state : Update.state) =
   let init_state = Update.GettingVersionInfo in
-
   fun mocks ->
     let expected_state_sequence =
-      [
-        UpdateMock
+      [ UpdateMock
           (fun () ->
             Helpers.setup_mocks_from_system_slot_spec mocks
-              { booted_slot; primary_slot; input_versions }
-          );
-        StateReached Update.GettingVersionInfo;
-        StateReached expected_state;
+              {booted_slot; primary_slot; input_versions}
+          )
+      ; StateReached Update.GettingVersionInfo
+      ; StateReached expected_state
       ]
     in
     (expected_state_sequence, init_state)

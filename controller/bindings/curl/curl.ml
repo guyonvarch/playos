@@ -49,47 +49,46 @@ let http_code_marker = '|'
 
 let parse_status_code_and_body str =
   let open Base.Option in
-  Base.String.rsplit2 ~on:http_code_marker str >>= fun (body, code_str) ->
+  Base.String.rsplit2 ~on:http_code_marker str
+  >>= fun (body, code_str) ->
   safe_int_of_string code_str >>= fun code -> return (code, body)
 
 let request ?proxy ?(headers = []) ?data ?(options = []) url =
   let cmd =
-    ( "",
-      (* path to Curl executable (uses PATH if empty string) *)
+    ( ""
+    , (* path to Curl executable (uses PATH if empty string) *)
       Array.concat
-        [
-          [|
-            "curl";
-            Uri.to_string url;
-            "--silent";
-            "--show-error";
-            "--write-out";
-            Char.escaped http_code_marker ^ "%{http_code}";
-          |];
-          ( match proxy with
-          | Some p -> [| "--proxy"; Uri.to_string p; "--proxy-anyauth" |]
+        [ [| "curl"
+           ; Uri.to_string url
+           ; "--silent"
+           ; "--show-error"
+           ; "--write-out"
+           ; Char.escaped http_code_marker ^ "%{http_code}"
+          |]
+        ; ( match proxy with
+          | Some p -> [|"--proxy"; Uri.to_string p; "--proxy-anyauth"|]
           | None -> [||]
-          );
-          headers
-          |> List.map (fun (k, v) -> [| "--header"; k ^ ":" ^ v |])
-          |> Array.concat;
-          ( match data with
-          | Some d -> [| "--data"; d |]
+          )
+        ; headers
+          |> List.map (fun (k, v) -> [|"--header"; k ^ ":" ^ v|])
+          |> Array.concat
+        ; ( match data with
+          | Some d -> [|"--data"; d|]
           | None -> [||]
-          );
-          Base.List.to_array options;
+          )
+        ; Base.List.to_array options
         ]
     )
   in
   match%lwt Lwt_result.catch (fun () -> exec cmd) with
   | Ok (Unix.WEXITED 0, stdout, _) -> (
-      match parse_status_code_and_body stdout with
-      | Some (code, body) ->
-          if Cohttp.Code.is_success code then
-            Lwt.return (RequestSuccess (code, body))
-          else Lwt.return (RequestFailure (UnsuccessfulStatus (code, body)))
-      | None -> Lwt.return (RequestFailure (UnreadableStatus stdout))
-    )
+    match parse_status_code_and_body stdout with
+    | Some (code, body) ->
+        if Cohttp.Code.is_success code then
+          Lwt.return (RequestSuccess (code, body))
+        else Lwt.return (RequestFailure (UnsuccessfulStatus (code, body)))
+    | None -> Lwt.return (RequestFailure (UnreadableStatus stdout))
+  )
   | Ok (Unix.WEXITED n, _, stderr) ->
       Lwt.return (RequestFailure (ProcessExit (n, stderr)))
   | Ok (Unix.WSIGNALED signal, _, _stderr) ->

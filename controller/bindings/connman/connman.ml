@@ -10,6 +10,7 @@ module OBus_proxy = struct
   include OBus_proxy
 
   let to_jsonm _ = `String "@opaque"
+
   let of_jsonm_exn _ = failwith "Deserialization is not supported"
 end
 
@@ -39,13 +40,13 @@ module Technology = struct
     | "p2p" -> Some P2P
     | _ -> None
 
-  type t = {
-    _proxy : (OBus_proxy.t[@sexp.opaque]);
-    name : string;
-    type' : type';
-    powered : bool;
-    connected : bool;
-  }
+  type t =
+    { _proxy: (OBus_proxy.t[@sexp.opaque])
+    ; name: string
+    ; type': type'
+    ; powered: bool
+    ; connected: bool
+    }
   [@@deriving sexp, protocol ~driver:(module Jsonm)]
 
   let set_property proxy ~name ~value =
@@ -124,16 +125,16 @@ module Agent = struct
             |> Option.map OBus_value.C.(cast_single basic_string)
           in
           match requirement_opt with
-          | Some "mandatory" -> [ k ]
+          | Some "mandatory" -> [k]
           | _ -> []
         )
         fields
     in
     match (input, mandatory_inputs) with
-    | Passphrase p, [ "Passphrase" ] ->
+    | Passphrase p, ["Passphrase"] ->
         return
-        @@ Ok [ ("Passphrase", p |> OBus_value.C.(make_single basic_string)) ]
-    | None, [ "Passphrase" ] ->
+        @@ Ok [("Passphrase", p |> OBus_value.C.(make_single basic_string))]
+    | None, ["Passphrase"] ->
         let%lwt () =
           Logs_lwt.err ~src:log_src (fun m ->
               m "Passphrase requested from agent, but not available."
@@ -213,8 +214,7 @@ module Agent = struct
           Lwt.fail obus_exn
     in
     Connman_interfaces.Net_connman_Agent.make
-      {
-        m_ReportError =
+      { m_ReportError=
           (fun obj (service, msg) ->
             let%lwt () =
               Logs_lwt.err ~src:log_src (fun m ->
@@ -222,24 +222,22 @@ module Agent = struct
               )
             in
             on_error (ManagerError (manager_error_of_string msg))
-          );
-        m_RequestInput = wrap_req request_input;
-        m_RequestBrowser = wrap_req request_browser;
-        m_Cancel = (fun obj () -> return_unit);
-        m_Release = (fun obj () -> return_unit);
+          )
+      ; m_RequestInput= wrap_req request_input
+      ; m_RequestBrowser= wrap_req request_browser
+      ; m_Cancel= (fun obj () -> return_unit)
+      ; m_Release= (fun obj () -> return_unit)
       }
 
   let create ~(input : input) on_error =
     let%lwt system_bus = OBus_bus.system () in
-    let path =
-      [ "net"; "connman"; "agent"; Random.int 9999 |> string_of_int ]
-    in
+    let path = ["net"; "connman"; "agent"; Random.int 9999 |> string_of_int] in
     let%lwt () =
       Logs_lwt.debug ~src:log_src (fun m ->
           m "creating connman agent at %s" (String.concat "/" path)
       )
     in
-    let obj = OBus_object.make ~interfaces:[ interface on_error ] path in
+    let obj = OBus_object.make ~interfaces:[interface on_error] path in
     let () = OBus_object.attach obj input in
     let () = OBus_object.export system_bus obj in
     return (path, obj)
@@ -268,119 +266,113 @@ module Service = struct
     | WPS
   [@@deriving sexp, protocol ~driver:(module Jsonm)]
 
-  let supported_security_protocols = [ None; WEP; PSK ]
+  let supported_security_protocols = [None; WEP; PSK]
+
   let string_of_security s = sexp_of_security s |> Sexplib.Sexp.to_string
 
   module IPv4 = struct
-    type t = {
-      method' : string;
-      address : string;
-      netmask : string;
-      gateway : string option;
-    }
+    type t =
+      { method': string
+      ; address: string
+      ; netmask: string
+      ; gateway: string option
+      }
     [@@deriving sexp, protocol ~driver:(module Jsonm)]
 
     let of_obus v =
       (fun () ->
         let open OBus_value.C in
         let properties = v |> cast_single (dict string variant) in
-        {
-          method' =
-            properties |> List.assoc "Method" |> cast_single basic_string;
-          address =
-            properties |> List.assoc "Address" |> cast_single basic_string;
-          netmask =
-            properties |> List.assoc "Netmask" |> cast_single basic_string;
-          gateway =
+        { method'= properties |> List.assoc "Method" |> cast_single basic_string
+        ; address=
+            properties |> List.assoc "Address" |> cast_single basic_string
+        ; netmask=
+            properties |> List.assoc "Netmask" |> cast_single basic_string
+        ; gateway=
             properties |> List.assoc_opt "Gateway"
-            |> Option.map (cast_single basic_string);
+            |> Option.map (cast_single basic_string)
         }
       )
       |> CCResult.guard |> CCResult.to_opt
   end
 
   module IPv6 = struct
-    type t = {
-      method' : string;
-      address : string;
-      prefix_length : int;
-      gateway : string option;
-      privacy : string;
-    }
+    type t =
+      { method': string
+      ; address: string
+      ; prefix_length: int
+      ; gateway: string option
+      ; privacy: string
+      }
     [@@deriving sexp, protocol ~driver:(module Jsonm)]
 
     let of_obus v =
       (fun () ->
         let open OBus_value.C in
         let properties = v |> cast_single (dict string variant) in
-        {
-          method' =
-            properties |> List.assoc "Method" |> cast_single basic_string;
-          address =
-            properties |> List.assoc "Address" |> cast_single basic_string;
-          prefix_length =
+        { method'= properties |> List.assoc "Method" |> cast_single basic_string
+        ; address=
+            properties |> List.assoc "Address" |> cast_single basic_string
+        ; prefix_length=
             properties |> List.assoc "PrefixLength" |> cast_single basic_byte
-            |> int_of_char;
-          gateway =
+            |> int_of_char
+        ; gateway=
             properties |> List.assoc_opt "Gateway"
-            |> Option.map (cast_single basic_string);
-          privacy =
-            properties |> List.assoc "Privacy" |> cast_single basic_string;
+            |> Option.map (cast_single basic_string)
+        ; privacy=
+            properties |> List.assoc "Privacy" |> cast_single basic_string
         }
       )
       |> CCResult.guard |> CCResult.to_opt
   end
 
   module Ethernet = struct
-    type t = {
-      method' : string;
-      interface : string;
-      address : string;
-      mtu : int;
-    }
+    type t =
+      { method': string
+      ; interface: string
+      ; address: string
+      ; mtu: int
+      }
     [@@deriving sexp, protocol ~driver:(module Jsonm)]
 
     let of_obus v =
       (fun () ->
         let open OBus_value.C in
         let properties = v |> cast_single (dict string variant) in
-        {
-          method' =
-            properties |> List.assoc "Method" |> cast_single basic_string;
-          interface =
-            properties |> List.assoc "Interface" |> cast_single basic_string;
-          address =
-            properties |> List.assoc "Address" |> cast_single basic_string;
-          mtu = properties |> List.assoc "MTU" |> cast_single basic_uint16;
+        { method'= properties |> List.assoc "Method" |> cast_single basic_string
+        ; interface=
+            properties |> List.assoc "Interface" |> cast_single basic_string
+        ; address=
+            properties |> List.assoc "Address" |> cast_single basic_string
+        ; mtu= properties |> List.assoc "MTU" |> cast_single basic_uint16
         }
       )
       |> CCResult.guard |> CCResult.to_opt
   end
 
   module Proxy = struct
-    type credentials = {
-      user : string;
-      password : (string[@sexp.opaque]);
-    }
+    type credentials =
+      { user: string
+      ; password: (string[@sexp.opaque])
+      }
     [@@deriving sexp, protocol ~driver:(module Jsonm)]
 
-    type t = {
-      host : string;
-      port : int;
-      credentials : credentials option;
-    }
+    type t =
+      { host: string
+      ; port: int
+      ; credentials: credentials option
+      }
     [@@deriving sexp, protocol ~driver:(module Jsonm)]
 
     let make ?user ?password host port =
-      {
-        host;
-        port;
-        credentials =
+      { host
+      ; port
+      ; credentials=
           ( match (user, password) with
           | Some "", _ -> None
-          | Some u, Some p -> Some { user = u; password = p }
+          | Some u, Some p -> Some {user= u; password= p}
           | _ -> None
-          );
+          )
       }
 
     let validate str =
@@ -389,19 +381,17 @@ module Service = struct
         match (Uri.scheme uri, Uri.host uri, Uri.port uri) with
         | Some "http", Some host, Some port ->
             Some
-              {
-                credentials =
+              { credentials=
                   ( match (Uri.user uri, Uri.password uri) with
                   | Some user, Some password ->
                       Some
-                        {
-                          user = Uri.pct_decode user;
-                          password = Uri.pct_decode password;
+                        { user= Uri.pct_decode user
+                        ; password= Uri.pct_decode password
                         }
                   | _ -> None
-                  );
-                host;
-                port;
+                  )
+              ; host
+              ; port
               }
         | _ -> None
       else None
@@ -425,23 +415,23 @@ module Service = struct
       if include_userinfo then Uri.with_userinfo uri userinfo else uri
   end
 
-  type t = {
-    _proxy : (OBus_proxy.t[@sexp.opaque]);
-    _manager : (OBus_proxy.t[@sexp.opaque]);
-    id : string;
-    name : string;
-    type' : Technology.type';
-    security : security list;
-    state : state;
-    strength : int option;
-    favorite : bool;
-    autoconnect : bool;
-    ipv4 : IPv4.t option;
-    ipv6 : IPv6.t option;
-    ethernet : Ethernet.t;
-    proxy : Proxy.t option;
-    nameservers : string list;
-  }
+  type t =
+    { _proxy: (OBus_proxy.t[@sexp.opaque])
+    ; _manager: (OBus_proxy.t[@sexp.opaque])
+    ; id: string
+    ; name: string
+    ; type': Technology.type'
+    ; security: security list
+    ; state: state
+    ; strength: int option
+    ; favorite: bool
+    ; autoconnect: bool
+    ; ipv4: IPv4.t option
+    ; ipv6: IPv6.t option
+    ; ethernet: Ethernet.t
+    ; proxy: Proxy.t option
+    ; nameservers: string list
+    }
   [@@deriving sexp, protocol ~driver:(module Jsonm)]
 
   (* Helper to parse a service from OBus *)
@@ -504,25 +494,24 @@ module Service = struct
           nameservers
           security
         ->
-          {
-            _proxy = OBus_proxy.make ~peer:(OBus_context.sender context) ~path;
-            _manager = manager;
-            id = path |> CCList.last 1 |> CCList.hd;
-            name;
-            type';
-            state;
-            strength;
-            favorite;
-            autoconnect;
-            ipv4 =
+          { _proxy= OBus_proxy.make ~peer:(OBus_context.sender context) ~path
+          ; _manager= manager
+          ; id= path |> CCList.last 1 |> CCList.hd
+          ; name
+          ; type'
+          ; state
+          ; strength
+          ; favorite
+          ; autoconnect
+          ; ipv4=
               ( if Option.is_some ipv4_user_config then ipv4_user_config
                 else ipv4
-              );
-            ipv6;
-            ethernet;
-            proxy;
-            nameservers;
-            security;
+              )
+          ; ipv6
+          ; ethernet
+          ; proxy
+          ; nameservers
+          ; security
           }
       )
       <*> (properties |> List.assoc_opt "Name" >>= string_of_obus)
@@ -564,7 +553,7 @@ module Service = struct
     let dict =
       OBus_value.C.make_single
         OBus_value.C.(dict string variant)
-        [ ("Method", OBus_value.C.(make_single basic_string) "direct") ]
+        [("Method", OBus_value.C.(make_single basic_string) "direct")]
     in
     set_property service ~name:"Proxy.Configuration" ~value:dict
 
@@ -572,12 +561,11 @@ module Service = struct
     let dict =
       OBus_value.C.make_single
         OBus_value.C.(dict string variant)
-        [
-          ("Method", OBus_value.C.(make_single basic_string) "manual");
-          ( "Servers",
-            OBus_value.C.(make_single (array basic_string))
-              [ Proxy.to_uri ~include_userinfo:true proxy |> Uri.to_string ]
-          );
+        [ ("Method", OBus_value.C.(make_single basic_string) "manual")
+        ; ( "Servers"
+          , OBus_value.C.(make_single (array basic_string))
+              [Proxy.to_uri ~include_userinfo:true proxy |> Uri.to_string]
+          )
         ]
     in
     set_property service ~name:"Proxy.Configuration" ~value:dict
@@ -586,11 +574,10 @@ module Service = struct
     let dict =
       OBus_value.C.make_single
         OBus_value.C.(dict string variant)
-        [
-          ("Method", OBus_value.C.(make_single basic_string) "manual");
-          ("Address", OBus_value.C.(make_single basic_string) address);
-          ("Netmask", OBus_value.C.(make_single basic_string) netmask);
-          ("Gateway", OBus_value.C.(make_single basic_string) gateway);
+        [ ("Method", OBus_value.C.(make_single basic_string) "manual")
+        ; ("Address", OBus_value.C.(make_single basic_string) address)
+        ; ("Netmask", OBus_value.C.(make_single basic_string) netmask)
+        ; ("Gateway", OBus_value.C.(make_single basic_string) gateway)
         ]
     in
     set_property service ~name:"IPv4.Configuration" ~value:dict
@@ -599,7 +586,7 @@ module Service = struct
     let dict =
       OBus_value.C.make_single
         OBus_value.C.(dict string variant)
-        [ ("Method", OBus_value.C.(make_single basic_string) "dhcp") ]
+        [("Method", OBus_value.C.(make_single basic_string) "dhcp")]
     in
     set_property service ~name:"IPv4.Configuration" ~value:dict
 
@@ -618,21 +605,17 @@ module Service = struct
     let%lwt () =
       Logs_lwt.debug ~src:log_src (fun m -> m "connect to service %s" service.id)
     in
-
     (* Store agent error in a local mutable variable *)
     let agent_reported_error = ref Option.None in
     let on_agent_error msg = Lwt.return (agent_reported_error := Some msg) in
-
     (* Create and register an agent that will pass input to ConnMan *)
     let%lwt agent_path, agent = Agent.create ~input on_agent_error in
     let%lwt () = register_agent service._manager ~path:agent_path in
-
     let destroy_agent () =
       (* Cleanup and destroy agent *)
       let%lwt () = unregister_agent service._manager ~path:agent_path in
       Agent.destroy agent
     in
-
     let%lwt obus_resp =
       Lwt_result.catch
         (OBus_method.call Connman_interfaces.Net_connman_Service.m_Connect
@@ -729,12 +712,11 @@ module Manager = struct
     let to_technology (path, properties) : Technology.t option =
       CCOption.(
         pure (fun name type' powered connected : Technology.t ->
-            {
-              _proxy = OBus_proxy.make ~peer:(OBus_context.sender context) ~path;
-              name;
-              type';
-              powered;
-              connected;
+            { _proxy= OBus_proxy.make ~peer:(OBus_context.sender context) ~path
+            ; name
+            ; type'
+            ; powered
+            ; connected
             }
         )
         <*> (properties |> List.assoc_opt "Name" >>= string_of_obus)
@@ -954,8 +936,11 @@ module Net_connman_Service = struct
     OBus_method.call m_SetProperty proxy (name, value)
 
   let clear_property proxy ~name = OBus_method.call m_ClearProperty proxy name
+
   let connect proxy = OBus_method.call m_Connect proxy ()
+
   let disconnect proxy = OBus_method.call m_Disconnect proxy ()
+
   let remove proxy = OBus_method.call m_Remove proxy ()
 
   let move_before proxy ~service =
@@ -967,6 +952,7 @@ module Net_connman_Service = struct
     OBus_method.call m_MoveAfter proxy service
 
   let reset_counters proxy = OBus_method.call m_ResetCounters proxy ()
+
   let property_changed proxy = OBus_signal.make s_PropertyChanged proxy
 end
 
@@ -977,5 +963,6 @@ module Net_connman_Technology = struct
     OBus_method.call m_SetProperty proxy (name, value)
 
   let scan proxy = OBus_method.call m_Scan proxy ()
+
   let property_changed proxy = OBus_signal.make s_PropertyChanged proxy
 end

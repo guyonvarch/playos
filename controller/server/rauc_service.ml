@@ -25,8 +25,11 @@ end) : S = struct
     Rauc.get_status t
 
   let get_booted_slot () : Rauc.Slot.t Lwt.t = Rauc.get_booted_slot t
+
   let mark_good = Rauc.mark_good t
+
   let get_primary () : Rauc.Slot.t option Lwt.t = Rauc.get_primary t
+
   let install : string -> unit Lwt.t = Rauc.install t
 end
 

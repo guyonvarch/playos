@@ -1,27 +1,20 @@
 open Lwt
 
 let main debug port =
-  Logs.set_reporter (Logging.reporter ());
-
+  Logs.set_reporter (Logging.reporter ()) ;
   if debug then Logs.set_level (Some Logs.Debug)
-  else Logs.set_level (Some Logs.Info);
-
+  else Logs.set_level (Some Logs.Info) ;
   let%lwt server_info = Info.get () in
-
   let%lwt () =
     Logs_lwt.info (fun m ->
         m "PlayOS Controller Daemon (%s)" server_info.version
     )
   in
-
   (* Connect with systemd *)
   let%lwt systemd = Systemd.Manager.connect () in
-
   (* Connect with RAUC *)
   let%lwt rauc = Rauc.daemon () in
-
   let health_s, health_p = Health.start ~systemd ~rauc in
-
   (* Log changes in health state *)
   let%lwt () =
     Lwt_react.S.(
@@ -36,13 +29,10 @@ let main debug port =
       >|= keep
     )
   in
-
   (* Connect with ConnMan *)
   let%lwt connman = Connman.Manager.connect () in
-
   (* Start the update mechanism *)
   let update_s, update_p = Update.start ~connman ~rauc in
-
   (* Log changes in update mechanism state *)
   let%lwt () =
     Lwt_react.S.(
@@ -57,10 +47,8 @@ let main debug port =
       >|= keep
     )
   in
-
   (* Start the GUI *)
   let gui_p = Gui.start ~systemd ~port ~rauc ~connman ~update_s ~health_s in
-
   let%lwt () =
     (* Initialize Network, parallel to starting server *)
     ( match%lwt Network.init ~connman with
@@ -71,26 +59,24 @@ let main debug port =
         )
     )
     <&> Lwt.pick
-          [
-            (* Make sure all threads run forever. *)
-            gui_p (* GUI *);
-            update_p (* Update mechanism *);
-            health_p (* Health monitoring *);
+          [ (* Make sure all threads run forever. *)
+            gui_p (* GUI *)
+          ; update_p (* Update mechanism *)
+          ; health_p (* Health monitoring *)
           ]
   in
-
   Logs_lwt.info (fun m -> m "terminating")
 
 let () =
   let open Cmdliner in
   let debug_a =
-    Arg.(flag (info ~doc:"Enable debug output." [ "d"; "debug" ]) |> value)
+    Arg.(flag (info ~doc:"Enable debug output." ["d"; "debug"]) |> value)
   in
   let port_a =
     Arg.(
       opt int 3333
         (info ~doc:"Port on which to start gui (http server)." ~docv:"PORT"
-           [ "p"; "port" ]
+           ["p"; "port"]
         )
       |> value
     )

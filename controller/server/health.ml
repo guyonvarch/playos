@@ -12,14 +12,13 @@ type state =
 
 let rec run ~systemd ~rauc ~set_state =
   let set state =
-    set_state state;
+    set_state state ;
     run ~systemd ~rauc ~set_state state
   in
   function
   | Pending -> (
       (* Wait for 30 seconds *)
       let%lwt () = Lwt_unix.sleep 30.0 in
-
       let open Systemd in
       (* Check what system state as systemd reports *)
       match%lwt Systemd.Manager.get_system_state systemd with

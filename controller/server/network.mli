@@ -5,12 +5,12 @@ val init : connman:Connman.Manager.t -> (unit, exn) Lwt_result.t
 
 module Interface : sig
   (** Network interface *)
-  type t = {
-    index : int;
-    name : string;
-    address : string;
-    link_type : string;
-  }
+  type t =
+    { index: int
+    ; name: string
+    ; address: string
+    ; link_type: string
+    }
   [@@deriving sexp, protocol ~driver:(module Jsonm)]
 
   val to_json : t -> Ezjsonm.value

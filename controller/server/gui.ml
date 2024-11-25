@@ -7,7 +7,7 @@ let log_src = Logs.Src.create "gui"
 (* Middleware that makes static content available *)
 let static () =
   let static_dir = Util.resource_path (Fpath.v "static") in
-  Logs.debug (fun m -> m "static content dir: %s" static_dir);
+  Logs.debug (fun m -> m "static content dir: %s" static_dir) ;
   Opium.Middleware.static ~local_path:static_dir ~uri_prefix:"/static" ()
 
 let page html =
@@ -21,17 +21,16 @@ let resp_json ?code json =
 
 let header key req = Cohttp.Header.get (Request.headers req) key
 
-type 'a timeout_params = {
-  duration : float;
-  on_timeout : unit -> 'a Lwt.t;
-}
+type 'a timeout_params =
+  { duration: float
+  ; on_timeout: unit -> 'a Lwt.t
+  }
 
-let with_timeout { duration; on_timeout } f =
-  [
-    f ();
-    (let%lwt () = Lwt_unix.sleep duration in
+let with_timeout {duration; on_timeout} f =
+  [ f ()
+  ; (let%lwt () = Lwt_unix.sleep duration in
      on_timeout ()
-    );
+    )
   ]
   |> Lwt.pick
 
@@ -52,20 +51,18 @@ let error_handling =
             Lwt.return
             @@ resp_json ~code:`Internal_server_error
             @@ `O
-                 [
-                   ("error", `Bool true);
-                   ("message", `String (Printexc.to_string exn));
+                 [ ("error", `Bool true)
+                 ; ("message", `String (Printexc.to_string exn))
                  ]
         | _ ->
             Lwt.return
               (page
                  (Error_page.html
-                    {
-                      message =
+                    { message=
                         exn |> Sexplib.Std.sexp_of_exn
-                        |> Sexplib.Sexp.to_string_hum;
-                      request =
-                        req |> Request.sexp_of_t |> Sexplib.Sexp.to_string_hum;
+                        |> Sexplib.Sexp.to_string_hum
+                    ; request=
+                        req |> Request.sexp_of_t |> Sexplib.Sexp.to_string_hum
                     }
                  )
               )
@@ -98,9 +95,9 @@ module LocalizationGui = struct
           let group_id, name =
             match String.split_on_char '/' re_spaced |> List.rev with
             (* An unscoped entry, e.g. UTC. *)
-            | [ singleton ] -> (singleton, singleton)
+            | [singleton] -> (singleton, singleton)
             (* A humble entry, likely scoped to continent, e.g. Europe/Amsterdam. *)
-            | [ name; group_id ] -> (group_id, name)
+            | [name; group_id] -> (group_id, name)
             (* A multi-hierarchical entry, e.g. America/Argentina/Buenos_Aires. *)
             | name :: group_sections ->
                 (String.concat "/" (List.rev group_sections), name)
@@ -119,47 +116,44 @@ module LocalizationGui = struct
     in
     let%lwt current_lang = Locale.get_lang () in
     let langs =
-      [
-        ("cs_CZ.UTF-8", "Czech");
-        ("nl_NL.UTF-8", "Dutch");
-        ("en_UK.UTF-8", "English (UK)");
-        ("en_US.UTF-8", "English (US)");
-        ("fi_FI.UTF-8", "Finnish");
-        ("fr_FR.UTF-8", "French");
-        ("de_DE.UTF-8", "German");
-        ("it_IT.UTF-8", "Italian");
-        ("pl_PL.UTF-8", "Polish");
-        ("es_ES.UTF-8", "Spanish");
+      [ ("cs_CZ.UTF-8", "Czech")
+      ; ("nl_NL.UTF-8", "Dutch")
+      ; ("en_UK.UTF-8", "English (UK)")
+      ; ("en_US.UTF-8", "English (US)")
+      ; ("fi_FI.UTF-8", "Finnish")
+      ; ("fr_FR.UTF-8", "French")
+      ; ("de_DE.UTF-8", "German")
+      ; ("it_IT.UTF-8", "Italian")
+      ; ("pl_PL.UTF-8", "Polish")
+      ; ("es_ES.UTF-8", "Spanish")
       ]
     in
     let%lwt current_keymap = Locale.get_keymap () in
     let keymaps =
-      [
-        ("cz", "Czech");
-        ("nl", "Dutch");
-        ("gb", "English (UK)");
-        ("us", "English (US)");
-        ("fi", "Finnish");
-        ("fr", "French");
-        ("de", "German");
-        ("ch", "German (Switzerland)");
-        ("it", "Italian");
-        ("pl", "Polish");
-        ("es", "Spanish");
+      [ ("cz", "Czech")
+      ; ("nl", "Dutch")
+      ; ("gb", "English (UK)")
+      ; ("us", "English (US)")
+      ; ("fi", "Finnish")
+      ; ("fr", "French")
+      ; ("de", "German")
+      ; ("ch", "German (Switzerland)")
+      ; ("it", "Italian")
+      ; ("pl", "Polish")
+      ; ("es", "Spanish")
       ]
     in
     let%lwt current_scaling = Screen_settings.get_scaling () in
     Lwt.return
       (page
          (Localization_page.html
-            {
-              timezone_groups;
-              current_timezone;
-              langs;
-              current_lang;
-              keymaps;
-              current_keymap;
-              current_scaling;
+            { timezone_groups
+            ; current_timezone
+            ; langs
+            ; current_lang
+            ; keymaps
+            ; current_keymap
+            ; current_scaling
             }
          )
       )
@@ -169,7 +163,7 @@ module LocalizationGui = struct
     let%lwt form_data = urlencoded_pairs_of_body req in
     let%lwt _ =
       match form_data |> List.assoc_opt "timezone" with
-      | Some [ tz_id ] -> Timedate.set_timezone tz_id
+      | Some [tz_id] -> Timedate.set_timezone tz_id
       | _ -> return ()
     in
     "/localization" |> Uri.of_string |> redirect'
@@ -178,7 +172,7 @@ module LocalizationGui = struct
     let%lwt form_data = urlencoded_pairs_of_body req in
     let%lwt _ =
       match form_data |> List.assoc_opt "lang" with
-      | Some [ lang ] -> Locale.set_lang lang
+      | Some [lang] -> Locale.set_lang lang
       | _ -> return ()
     in
     "/localization" |> Uri.of_string |> redirect'
@@ -187,7 +181,7 @@ module LocalizationGui = struct
     let%lwt form_data = urlencoded_pairs_of_body req in
     let%lwt _ =
       match form_data |> List.assoc_opt "keymap" with
-      | Some [ keymap ] -> Locale.set_keymap keymap
+      | Some [keymap] -> Locale.set_keymap keymap
       | _ -> return ()
     in
     "/localization" |> Uri.of_string |> redirect'
@@ -196,11 +190,11 @@ module LocalizationGui = struct
     let%lwt form_data = urlencoded_pairs_of_body req in
     let%lwt _ =
       match form_data |> List.assoc_opt "scaling" with
-      | Some [ opt ] -> (
-          match Screen_settings.scaling_of_string opt with
-          | Some s -> Screen_settings.set_scaling s
-          | None -> fail_with (Format.sprintf "Unknown screen setting: %s" opt)
-        )
+      | Some [opt] -> (
+        match Screen_settings.scaling_of_string opt with
+        | Some s -> Screen_settings.set_scaling s
+        | None -> fail_with (Format.sprintf "Unknown screen setting: %s" opt)
+      )
       | _ -> return ()
     in
     "/localization" |> Uri.of_string |> redirect'
@@ -220,30 +214,22 @@ module NetworkGui = struct
 
   let overview ~(connman : Manager.t) req =
     let%lwt all_services = Manager.get_services connman in
-
     let%lwt proxy = Manager.get_default_proxy connman in
-
     let%lwt interfaces = Network.Interface.get_all () in
-
     let pp_proxy p =
       let uri =
         p |> Service.Proxy.to_uri ~include_userinfo:false |> Uri.to_string
       in
       match p.credentials with
-      | Some { user; password } ->
+      | Some {user; password} ->
           let password_indication =
             if password = "" then "" else ", password: *****"
           in
           uri ^ " (user: " ^ user ^ password_indication ^ ")"
       | None -> uri
     in
-
     let params : Network_list_page.params =
-      {
-        proxy = proxy |> Option.map pp_proxy;
-        services = all_services;
-        interfaces;
-      }
+      {proxy= proxy |> Option.map pp_proxy; services= all_services; interfaces}
     in
     match header "accept" req with
     | Some "application/json" ->
@@ -285,7 +271,6 @@ module NetworkGui = struct
     let open Service.Proxy in
     let non_empty s = if s = "" then None else Some s in
     let opt_int_of_string s = try Some (int_of_string s) with _ -> None in
-
     match form_data |> List.assoc_opt "proxy_enabled" with
     | None -> return None
     | Some _ -> (
@@ -306,7 +291,7 @@ module NetworkGui = struct
         in
         let password =
           match (keep_password, current_proxy_opt) with
-          | true, Some { host; port; credentials = Some { user; password } } ->
+          | true, Some {host; port; credentials= Some {user; password}} ->
               if
                 host_input = Some host && port_input = Some port
                 && user_input = Some user
@@ -379,11 +364,10 @@ module NetworkGui = struct
     let%lwt form_data = urlencoded_pairs_of_body req in
     let passphrase =
       match form_data |> List.assoc_opt "passphrase" with
-      | Some [ passphrase ] -> Connman.Agent.Passphrase passphrase
+      | Some [passphrase] -> Connman.Agent.Passphrase passphrase
       | _ -> Connman.Agent.None
     in
     let%lwt service = with_service ~connman (param req "id") in
-
     let%lwt () = Connman.Service.connect ~input:passphrase service in
     redirect' (Uri.of_string "/network")
 
@@ -391,10 +375,8 @@ module NetworkGui = struct
   let update ~(connman : Connman.Manager.t) req =
     let%lwt form_data = urlencoded_pairs_of_body req in
     let%lwt service = with_service ~connman (param req "id") in
-
     (* Static IP *)
     let%lwt () = update_static_ip service form_data in
-
     (* Proxy *)
     let%lwt current_proxy = Manager.get_default_proxy connman in
     let%lwt () =
@@ -402,7 +384,6 @@ module NetworkGui = struct
       | None -> Connman.Service.set_direct_proxy service
       | Some proxy -> Connman.Service.set_manual_proxy service proxy
     in
-
     (* Grant time for changes to take effect and return to overview *)
     let%lwt () = Lwt_unix.sleep 0.5 in
     redirect' (Uri.of_string "/network")
@@ -410,12 +391,10 @@ module NetworkGui = struct
   (** Remove a service **)
   let remove ~(connman : Connman.Manager.t) req =
     let%lwt service = with_service ~connman (param req "id") in
-
     (* Clear settings. *)
     let%lwt () = Connman.Service.set_direct_proxy service in
     let%lwt () = Connman.Service.set_nameservers service [] in
     let%lwt () = Connman.Service.set_dhcp_ipv4 service in
-
     let%lwt () = Connman.Service.remove service in
     redirect' (Uri.of_string "/network")
 
@@ -432,8 +411,9 @@ end
 module StatusGui = struct
   open Status_page
 
-  let shutdown () = Util.run_cmd_no_stdout [| "halt"; "--poweroff" |]
-  let reboot () = Util.run_cmd_no_stdout [| "reboot" |]
+  let shutdown () = Util.run_cmd_no_stdout [|"halt"; "--poweroff"|]
+
+  let reboot () = Util.run_cmd_no_stdout [|"reboot"|]
 
   let switch_slot rauc target_slot =
     let%lwt () = Rauc.mark_active rauc target_slot in
@@ -469,8 +449,7 @@ module StatusGui = struct
                 ~ok:(fun s -> Status_page.Status s)
                 ~error:(fun e -> Status_page.Error (Printexc.to_string e))
     in
-    { health = health_state; update = update_state; rauc; booted_slot }
-    |> return
+    {health= health_state; update= update_state; rauc; booted_slot} |> return
 
   let exec_and_resp_ok f req = f req >|= (fun _ -> `String "Ok") >|= respond
 
@@ -527,14 +506,13 @@ module RemoteMaintenanceGui = struct
              Systemd.Manager.start_unit systemd "zerotierone.service"
            in
            with_timeout
-             {
-               duration = 2.0;
-               on_timeout =
+             { duration= 2.0
+             ; on_timeout=
                  (fun () ->
                    let msg = "Timeout starting remote maintenance service." in
                    let%lwt () = Logs_lwt.err (fun m -> m "%s" msg) in
                    fail_with msg
-                 );
+                 )
              }
              wait_until_zerotier_is_on
        )

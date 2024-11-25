@@ -11,7 +11,7 @@ type expected_outcomes =
    outcomes: installing the update or not installing the update.
 *)
 let slot_spec_to_outcome
-    ({ booted_slot; primary_slot; input_versions } : Helpers.system_slot_spec) =
+    ({booted_slot; primary_slot; input_versions} : Helpers.system_slot_spec) =
   let booted_is_out_of_date =
     Semver.compare input_versions.booted input_versions.latest = -1
   in
@@ -58,9 +58,7 @@ let test_slot_spec case =
   in
   Alcotest_lwt.test_case test_case_descr `Quick (fun _ () ->
       let mocks = Helpers.init_test_deps () in
-
       let () = Helpers.setup_mocks_from_system_slot_spec mocks case in
-
       let module UpdateServiceI = (val mocks.update_service) in
       let%lwt out_state = UpdateServiceI.run_step GettingVersionInfo in
       if state_matches_expected_outcome out_state expected_outcome then
