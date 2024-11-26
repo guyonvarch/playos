@@ -17,9 +17,9 @@ let sexp_of_version_info v =
   let open Sexplib in
   Sexp.(
     List
-      [ List [Atom "latest"; Atom (Semver.to_string v.latest)]
-      ; List [Atom "booted"; Atom (Semver.to_string v.booted)]
-      ; List [Atom "inactive"; Atom (Semver.to_string v.inactive)]
+      [ List [ Atom "latest"; Atom (Semver.to_string v.latest) ]
+      ; List [ Atom "booted"; Atom (Semver.to_string v.booted) ]
+      ; List [ Atom "inactive"; Atom (Semver.to_string v.inactive) ]
       ]
   )
 
@@ -100,7 +100,8 @@ let semver_of_string string =
   | None ->
       failwith
         (Format.sprintf "could not parse version (version string: %s)" string)
-  | Some version -> version
+  | Some version ->
+      version
 
 module Make (Deps : ServiceDeps) : UpdateService = struct
   open Deps
@@ -117,9 +118,11 @@ module Make (Deps : ServiceDeps) : UpdateService = struct
     let system_b_version = rauc_status.b.version |> semver_of_string in
     match%lwt RaucI.get_booted_slot () with
     | SystemA ->
-        {latest; booted= system_a_version; inactive= system_b_version} |> return
+        { latest; booted= system_a_version; inactive= system_b_version }
+        |> return
     | SystemB ->
-        {latest; booted= system_b_version; inactive= system_a_version} |> return
+        { latest; booted= system_b_version; inactive= system_a_version }
+        |> return
 
   (* Update mechanism process *)
 
@@ -140,7 +143,8 @@ module Make (Deps : ServiceDeps) : UpdateService = struct
         ( match resp with
         | Ok (slot_p, slot_b, version_info) ->
             evaluate_version_info slot_p slot_b version_info
-        | Error e -> ErrorGettingVersionInfo (Printexc.to_string e)
+        | Error e ->
+            ErrorGettingVersionInfo (Printexc.to_string e)
         )
         |> set
     | ErrorGettingVersionInfo msg ->
@@ -156,8 +160,10 @@ module Make (Deps : ServiceDeps) : UpdateService = struct
     | Downloading version -> (
         (* download latest version *)
         match%lwt Lwt_result.catch (fun () -> ClientI.download version) with
-        | Ok bundle_path -> Installing bundle_path |> set
-        | Error exn -> ErrorDownloading (Printexc.to_string exn) |> set
+        | Ok bundle_path ->
+            Installing bundle_path |> set
+        | Error exn ->
+            ErrorDownloading (Printexc.to_string exn) |> set
       )
     | ErrorDownloading msg ->
         (* handle error while downloading bundle *)
@@ -206,7 +212,7 @@ module Make (Deps : ServiceDeps) : UpdateService = struct
 end
 
 let default_config : config =
-  {error_backoff_duration= 30.0; check_for_updates_interval= 1. *. 60. *. 60.}
+  { error_backoff_duration= 30.0; check_for_updates_interval= 1. *. 60. *. 60. }
 
 let build_deps ~connman ~(rauc : Rauc.t) : (module ServiceDeps) Lwt.t =
   let config = default_config in

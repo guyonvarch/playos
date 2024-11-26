@@ -19,19 +19,19 @@ val get_configured_timezone : unit -> string option Lwt.t
 val set_timezone : string -> unit Lwt.t
 
 module Org_freedesktop_timedate1 : sig
-  val timezone : OBus_proxy.t -> (string, [`readable]) OBus_property.t
+  val timezone : OBus_proxy.t -> (string, [ `readable ]) OBus_property.t
 
-  val local_rtc : OBus_proxy.t -> (bool, [`readable]) OBus_property.t
+  val local_rtc : OBus_proxy.t -> (bool, [ `readable ]) OBus_property.t
 
-  val can_ntp : OBus_proxy.t -> (bool, [`readable]) OBus_property.t
+  val can_ntp : OBus_proxy.t -> (bool, [ `readable ]) OBus_property.t
 
-  val ntp : OBus_proxy.t -> (bool, [`readable]) OBus_property.t
+  val ntp : OBus_proxy.t -> (bool, [ `readable ]) OBus_property.t
 
-  val ntpsynchronized : OBus_proxy.t -> (bool, [`readable]) OBus_property.t
+  val ntpsynchronized : OBus_proxy.t -> (bool, [ `readable ]) OBus_property.t
 
-  val time_usec : OBus_proxy.t -> (int64, [`readable]) OBus_property.t
+  val time_usec : OBus_proxy.t -> (int64, [ `readable ]) OBus_property.t
 
-  val rtctime_usec : OBus_proxy.t -> (int64, [`readable]) OBus_property.t
+  val rtctime_usec : OBus_proxy.t -> (int64, [ `readable ]) OBus_property.t
 
   val set_time : OBus_proxy.t -> int64 -> bool -> bool -> unit Lwt.t
 

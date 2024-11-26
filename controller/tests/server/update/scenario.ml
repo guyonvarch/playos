@@ -15,9 +15,12 @@ type scenario_spec =
 
 let specfmt spec =
   match spec with
-  | StateReached s -> "StateReached: " ^ Helpers.statefmt s
-  | ActionDone (descr, c) -> "ActionDone: " ^ descr
-  | UpdateMock _ -> "UpdateMock: <fun>"
+  | StateReached s ->
+      "StateReached: " ^ Helpers.statefmt s
+  | ActionDone (descr, c) ->
+      "ActionDone: " ^ descr
+  | UpdateMock _ ->
+      "UpdateMock: <fun>"
 
 let _WILDCARD_PAT = "<..>"
 
@@ -34,11 +37,7 @@ let str_match_with_magic_pat expected actual =
   let exp_regexp =
     regexp @@ String.concat ""
     @@ List.map
-         (fun p ->
-           match p with
-           | Text a -> quote a
-           | Delim _ -> ".*"
-         )
+         (fun p -> match p with Text a -> quote a | Delim _ -> ".*")
          exp_parts
   in
   string_match exp_regexp actual 0
@@ -71,17 +70,12 @@ let interpret_spec (state : Update.state) (spec : scenario_spec) =
   | ActionDone (descr, f) ->
       let%lwt rez = f state in
       Lwt.return @@ Alcotest.(check bool) (specfmt spec) true rez
-  | UpdateMock f -> Lwt.return @@ f ()
+  | UpdateMock f ->
+      Lwt.return @@ f ()
 
-let is_state_spec s =
-  match s with
-  | StateReached _ -> true
-  | _ -> false
+let is_state_spec s = match s with StateReached _ -> true | _ -> false
 
-let is_mock_spec s =
-  match s with
-  | UpdateMock _ -> true
-  | _ -> false
+let is_mock_spec s = match s with UpdateMock _ -> true | _ -> false
 
 let rec lwt_while cond expr =
   if cond () then
@@ -116,7 +110,8 @@ let rec consume_mock_specs state_seq cur_state =
       let _ = Queue.pop state_seq in
       let%lwt () = interpret_spec cur_state spec in
       consume_mock_specs state_seq cur_state
-  | _ -> Lwt.return ()
+  | _ ->
+      Lwt.return ()
 
 let rec run_test_scenario (test_context : Helpers.test_context)
     expected_state_sequence cur_state =
@@ -142,7 +137,7 @@ let scenario_from_system_spec ?(booted_slot = Rauc.Slot.SystemA)
       [ UpdateMock
           (fun () ->
             Helpers.setup_mocks_from_system_slot_spec mocks
-              {booted_slot; primary_slot; input_versions}
+              { booted_slot; primary_slot; input_versions }
           )
       ; StateReached Update.GettingVersionInfo
       ; StateReached expected_state

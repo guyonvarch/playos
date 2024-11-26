@@ -19,7 +19,7 @@ let rec grouped n s =
   let l = String.length s in
   if n <= 0 then invalid_arg "Group size must be above 0"
   else if l = 0 then []
-  else if l <= n then [s]
+  else if l <= n then [ s ]
   else List.cons (String.sub s 0 n) (grouped n (String.sub s n (l - n)))
 
 let get () =
@@ -29,7 +29,8 @@ let get () =
   in
   let%lwt zerotier_address =
     match%lwt Zerotier.get_status () with
-    | Ok status -> Some status.address |> return
+    | Ok status ->
+        Some status.address |> return
     | Error err ->
         let%lwt () =
           Logs_lwt.err (fun m ->
@@ -42,8 +43,10 @@ let get () =
   let%lwt current_time = Timedate.get_current_time timedate_daemon in
   let%lwt timezone =
     match%lwt Timedate.get_active_timezone timedate_daemon with
-    | Some tz -> return tz
-    | None -> return "No timezone"
+    | Some tz ->
+        return tz
+    | None ->
+        return "No timezone"
   in
   let local_time = current_time ^ " (" ^ timezone ^ ")" in
   { app= "PlayOS Controller"

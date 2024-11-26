@@ -26,7 +26,7 @@ type range = int Option.t * int Option.t
 let mock_server () =
   object (self)
     val mutable state =
-      ref {latest_version= "0.0.0"; available_bundles= Hashtbl.create 5}
+      ref { latest_version= "0.0.0"; available_bundles= Hashtbl.create 5 }
 
     method add_bundle vsn contents =
       Hashtbl.add !state.available_bundles vsn contents
@@ -34,7 +34,7 @@ let mock_server () =
     method remove_bundle vsn contents =
       Hashtbl.remove !state.available_bundles vsn
 
-    method set_latest_version vsn = state := {!state with latest_version= vsn}
+    method set_latest_version vsn = state := { !state with latest_version= vsn }
 
     method private get_latest_handler _req =
       let resp = Response.of_string_body !state.latest_version in
@@ -59,7 +59,8 @@ let mock_server () =
         with e ->
           failwith @@ "Failed to parse range headers: " ^ Printexc.to_string e
       )
-      | None -> (None, None)
+      | None ->
+          (None, None)
 
     method private range_resp (range_start, range_end) bundle =
       let bundle_bytes = String.to_bytes bundle in
@@ -77,7 +78,8 @@ let mock_server () =
         match bundle with
         | Some bund -> (
           match range with
-          | None, None -> Response.of_string_body bund
+          | None, None ->
+              Response.of_string_body bund
           | _ ->
               let bundle_trunc, (b_start, b_end, b_total) =
                 self#range_resp range bund

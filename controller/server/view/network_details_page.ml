@@ -5,19 +5,15 @@ let proxy_form proxy =
   let open Proxy in
   div
     [ label
-        ~a:[a_class ["d-Label"]]
+        ~a:[ a_class [ "d-Label" ] ]
         [ txt "Server"
         ; span
             [ input
                 ~a:
                   [ a_input_type `Text
-                  ; a_class ["d-Input"; "d-Network__Input"]
+                  ; a_class [ "d-Input"; "d-Network__Input" ]
                   ; a_name "proxy_host"
-                  ; a_value
-                      ( match proxy with
-                      | Some {host} -> host
-                      | _ -> ""
-                      )
+                  ; a_value (match proxy with Some { host } -> host | _ -> "")
                   ; a_placeholder "Host"
                   ; a_pattern {|[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*|}
                   ]
@@ -26,14 +22,16 @@ let proxy_form proxy =
             ; input
                 ~a:
                   [ a_input_type `Number
-                  ; a_class ["d-Input"]
+                  ; a_class [ "d-Input" ]
                   ; a_name "proxy_port"
                   ; a_size 10
                   ; a_step (Some 1.0)
                   ; a_value
                       ( match proxy with
-                      | Some {port} -> string_of_int port
-                      | _ -> ""
+                      | Some { port } ->
+                          string_of_int port
+                      | _ ->
+                          ""
                       )
                   ; a_placeholder "Port"
                   ]
@@ -41,17 +39,19 @@ let proxy_form proxy =
             ]
         ]
     ; label
-        ~a:[a_class ["d-Label"]]
+        ~a:[ a_class [ "d-Label" ] ]
         [ txt "Username (optional)"
         ; input
             ~a:
               [ a_input_type `Text
-              ; a_class ["d-Input"; "d-Network__Input"]
+              ; a_class [ "d-Input"; "d-Network__Input" ]
               ; a_name "proxy_user"
               ; a_value
                   ( match proxy with
-                  | Some {credentials= Some {user}} -> user
-                  | _ -> ""
+                  | Some { credentials= Some { user } } ->
+                      user
+                  | _ ->
+                      ""
                   )
               ]
             ()
@@ -59,19 +59,20 @@ let proxy_form proxy =
     ; div
         ~a:
           ( match proxy with
-          | Some {credentials= Some {password}} ->
+          | Some { credentials= Some { password } } ->
               if password <> "" then
-                [Unsafe.string_attrib "is" "keep-previous-password"]
+                [ Unsafe.string_attrib "is" "keep-previous-password" ]
               else []
-          | _ -> []
+          | _ ->
+              []
           )
         [ label
-            ~a:[a_class ["d-Label"]]
+            ~a:[ a_class [ "d-Label" ] ]
             [ txt "Password (optional)"
             ; input
                 ~a:
                   [ a_input_type `Password
-                  ; a_class ["d-Input"; "d-Network__Input"]
+                  ; a_class [ "d-Input"; "d-Network__Input" ]
                   ; a_name "proxy_password"
                   ; a_value ""
                   ; Unsafe.string_attrib "is" "show-password"
@@ -84,7 +85,7 @@ let proxy_form proxy =
 let maybe_elem cond elem = if cond then Some elem else None
 
 let not_connected_form service =
-  let requires_passphrase = service.security <> [None] in
+  let requires_passphrase = service.security <> [ None ] in
   form
     ~a:
       [ a_action ("/network/" ^ service.id ^ "/connect")
@@ -94,12 +95,12 @@ let not_connected_form service =
     (Option.to_list
        (maybe_elem requires_passphrase
           (label
-             ~a:[a_class ["d-Label"]]
+             ~a:[ a_class [ "d-Label" ] ]
              [ txt "Password"
              ; input
                  ~a:
                    [ a_input_type `Password
-                   ; a_class ["d-Input"; "d-Network__Input"]
+                   ; a_class [ "d-Input"; "d-Network__Input" ]
                    ; a_name "passphrase"
                    ; Unsafe.string_attrib "is" "show-password"
                    ]
@@ -109,7 +110,11 @@ let not_connected_form service =
        )
     @ [ p
           [ input
-              ~a:[a_input_type `Submit; a_class ["d-Button"]; a_value "Connect"]
+              ~a:
+                [ a_input_type `Submit
+                ; a_class [ "d-Button" ]
+                ; a_value "Connect"
+                ]
               ()
           ]
       ]
@@ -132,12 +137,12 @@ let is_static service =
 let static_ip_form service =
   let ip_input ~name ~labelTxt ~value ~pattern =
     [ label
-        ~a:[a_class ["d-Label"]]
+        ~a:[ a_class [ "d-Label" ] ]
         [ txt labelTxt
         ; input
             ~a:
               [ a_value value
-              ; a_class ["d-Input"; "d-Network__Input"]
+              ; a_class [ "d-Input"; "d-Network__Input" ]
               ; a_name name
               ; a_pattern pattern
               ]
@@ -154,9 +159,9 @@ let static_ip_form service =
   in
   div
     [ p
-        ~a:[a_class ["d-Note"]]
+        ~a:[ a_class [ "d-Note" ] ]
         [ txt "A valid IP address must be in the form of "
-        ; code ~a:[a_class ["d-Code"]] [txt "n.n.n.n"]
+        ; code ~a:[ a_class [ "d-Code" ] ] [ txt "n.n.n.n" ]
         ; txt ","
         ; br ()
         ; txt "where n is a number in the range of 0-255."
@@ -179,7 +184,7 @@ let static_ip_form service =
               )
             ~pattern:multi_ip_address_regex_pattern
         @ [ p
-              ~a:[a_class ["d-Note"]]
+              ~a:[ a_class [ "d-Note" ] ]
               [ txt
                   "To set multiple nameservers, use a comma separated list of \
                    addresses."
@@ -197,16 +202,16 @@ let toggle_group ~is_enabled ~legend_text ~toggle_field contents =
   fieldset
     ~a:
       [ a_class
-          (["d-Network__ToggleGroup"]
-          @ if is_enabled then ["d-Network__ToggleGroup--Enabled"] else []
+          ([ "d-Network__ToggleGroup" ]
+          @ if is_enabled then [ "d-Network__ToggleGroup--Enabled" ] else []
           )
       ]
     ~legend:
       (legend
          [ label
-             ~a:[a_class ["d-CheckboxLabel"]]
+             ~a:[ a_class [ "d-CheckboxLabel" ] ]
              [ checked_input is_enabled
-                 [ a_class ["d-Checkbox"]
+                 [ a_class [ "d-Checkbox" ]
                  ; a_input_type `Checkbox
                  ; a_name toggle_field
                  ; a_onclick
@@ -217,7 +222,7 @@ let toggle_group ~is_enabled ~legend_text ~toggle_field contents =
              ]
          ]
       )
-    [fieldset contents]
+    [ fieldset contents ]
 
 let connected_form service =
   div
@@ -230,19 +235,20 @@ let connected_form service =
         [ toggle_group
             ~is_enabled:(Option.is_some service.proxy)
             ~legend_text:"HTTP Proxy" ~toggle_field:"proxy_enabled"
-            [proxy_form service.proxy]
+            [ proxy_form service.proxy ]
         ; toggle_group ~is_enabled:(is_static service) ~legend_text:"Static IP"
             ~toggle_field:"static_ip_enabled"
-            [static_ip_form service]
+            [ static_ip_form service ]
         ; input
-            ~a:[a_input_type `Submit; a_class ["d-Button"]; a_value "Update"]
+            ~a:
+              [ a_input_type `Submit; a_class [ "d-Button" ]; a_value "Update" ]
             ()
         ]
     ]
 
 let unsupported_notice service =
   p
-    ~a:[a_class ["d-Note"]]
+    ~a:[ a_class [ "d-Note" ] ]
     [ txt
         "Connecting to this network is not possible, because it uses an \
          unsupported authentication protocol."
@@ -261,7 +267,7 @@ let unsupported_notice service =
 let html service =
   let is_service_connected = Connman.Service.is_connected service in
   let is_service_supported =
-    List.exists (fun e -> List.mem e service.security) [PSK; WEP; None]
+    List.exists (fun e -> List.mem e service.security) [ PSK; WEP; None ]
     || service.security = []
     (* wired connections have this *)
   in
@@ -270,8 +276,10 @@ let html service =
   in
   let icon =
     match service.strength with
-    | Some s -> Icon.wifi ~strength:s ()
-    | None -> Icon.ethernet
+    | Some s ->
+        Icon.wifi ~strength:s ()
+    | None ->
+        Icon.ethernet
   in
   let properties = service |> sexp_of_t |> Sexplib.Sexp.to_string_hum in
   let disconnect_button =
@@ -282,7 +290,7 @@ let html service =
         ; Unsafe.string_attrib "is" "disable-after-submit"
         ]
       [ input
-          ~a:[a_input_type `Submit; a_class ["d-Button"]; a_value "Forget"]
+          ~a:[ a_input_type `Submit; a_class [ "d-Button" ]; a_value "Forget" ]
           ()
       ]
   in
@@ -292,7 +300,7 @@ let html service =
          ?right_action:
            (if is_disconnectable then Some disconnect_button else None)
          ~icon
-         [txt service.name]
+         [ txt service.name ]
       )
     (div
        [ ( if is_service_connected then connected_form service
@@ -300,9 +308,9 @@ let html service =
            else unsupported_notice service
          )
        ; div
-           ~a:[a_class ["d-Network__Properties"]]
-           [ h2 ~a:[a_class ["d-Title"]] [txt "Service Details"]
-           ; pre ~a:[a_class ["d-Preformatted"]] [txt properties]
+           ~a:[ a_class [ "d-Network__Properties" ] ]
+           [ h2 ~a:[ a_class [ "d-Title" ] ] [ txt "Service Details" ]
+           ; pre ~a:[ a_class [ "d-Preformatted" ] ] [ txt properties ]
            ]
        ]
     )

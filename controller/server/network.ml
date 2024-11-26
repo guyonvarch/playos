@@ -26,7 +26,7 @@ let enable_and_scan_wifi_devices ~connman =
        return_unit
       )
       (* Add a timeout to scan *)
-      |> fun p -> [p; Lwt_unix.timeout 30.0] |> Lwt.pick
+      |> fun p -> [ p; Lwt_unix.timeout 30.0 ] |> Lwt.pick
   )
 
 let init ~connman =
@@ -34,7 +34,8 @@ let init ~connman =
     Logs_lwt.info ~src:log_src (fun m -> m "initializing network connections")
   in
   match%lwt enable_and_scan_wifi_devices ~connman with
-  | Ok () -> Lwt_result.return ()
+  | Ok () ->
+      Lwt_result.return ()
   | Error exn ->
       let%lwt () =
         Logs_lwt.warn ~src:log_src (fun m ->
@@ -73,7 +74,7 @@ module Interface = struct
     }
 
   let get_all () =
-    let command = ("/run/current-system/sw/bin/ip", [|"ip"; "-j"; "link"|]) in
+    let command = ("/run/current-system/sw/bin/ip", [| "ip"; "-j"; "link" |]) in
     let%lwt json = Lwt_process.pread command in
     json |> Ezjsonm.from_string |> Ezjsonm.value |> Ezjsonm.get_list of_json
     |> return

@@ -34,11 +34,16 @@ module Technology = struct
   [@@deriving sexp, protocol ~driver:(module Jsonm)]
 
   let type_of_string = function
-    | "wifi" -> Some Wifi
-    | "ethernet" -> Some Ethernet
-    | "bluetooth" -> Some Bluetooth
-    | "p2p" -> Some P2P
-    | _ -> None
+    | "wifi" ->
+        Some Wifi
+    | "ethernet" ->
+        Some Ethernet
+    | "bluetooth" ->
+        Some Bluetooth
+    | "p2p" ->
+        Some P2P
+    | _ ->
+        None
 
   type t =
     { _proxy: (OBus_proxy.t[@sexp.opaque])
@@ -124,17 +129,15 @@ module Agent = struct
             List.assoc_opt "Requirement" v_ocaml
             |> Option.map OBus_value.C.(cast_single basic_string)
           in
-          match requirement_opt with
-          | Some "mandatory" -> [k]
-          | _ -> []
+          match requirement_opt with Some "mandatory" -> [ k ] | _ -> []
         )
         fields
     in
     match (input, mandatory_inputs) with
-    | Passphrase p, ["Passphrase"] ->
+    | Passphrase p, [ "Passphrase" ] ->
         return
-        @@ Ok [("Passphrase", p |> OBus_value.C.(make_single basic_string))]
-    | None, ["Passphrase"] ->
+        @@ Ok [ ("Passphrase", p |> OBus_value.C.(make_single basic_string)) ]
+    | None, [ "Passphrase" ] ->
         let%lwt () =
           Logs_lwt.err ~src:log_src (fun m ->
               m "Passphrase requested from agent, but not available."
@@ -166,13 +169,16 @@ module Agent = struct
   (* based on `connman_service_error` enum and it's stringified mapping in
      error2string: https://git.kernel.org/pub/scm/network/connman/connman.git/tree/src/service.c?h=1.42#n324 *)
   let manager_error_of_string = function
-    | "invalid-key" -> InvalidKey
-    | "connect-failed" -> ConnectFailed
+    | "invalid-key" ->
+        InvalidKey
+    | "connect-failed" ->
+        ConnectFailed
     (* although this sounds generic, `blocked` err is only produced by connman
        when wpa_supplicant reports a wifi deauth with reason code = 6, which is
        "Class 2 frame received from nonauthenticated station".
        This seems like a protocol error? *)
-    | "blocked" -> Blocked
+    | "blocked" ->
+        Blocked
     (*
     (* defined, but never produced in connman v1.42 *)
     | "dhcp-failed" -> DhcpFailed
@@ -183,10 +189,12 @@ module Agent = struct
     | "login-failed" -> LoginFailed
     | "auth-failed" -> AuthFailed
 *)
-    | s -> Unknown s
+    | s ->
+        Unknown s
 
   let agent_error_msg = function
-    | PassMissing -> "Password is required for this access point"
+    | PassMissing ->
+        "Password is required for this access point"
     | MissingRequestedInputs props ->
         Printf.sprintf "Unsupported protocol: additional inputs are needed: %s"
           (String.concat ", " props)
@@ -204,7 +212,8 @@ module Agent = struct
         |> Lwt_result.map_error (fun e -> UnexpectedFailure e)
       in
       match Result.join caught_f with
-      | Ok a -> Lwt.return a
+      | Ok a ->
+          Lwt.return a
       | Error err ->
           let%lwt () = on_error (AgentError err) in
           let obus_exn =
@@ -231,13 +240,15 @@ module Agent = struct
 
   let create ~(input : input) on_error =
     let%lwt system_bus = OBus_bus.system () in
-    let path = ["net"; "connman"; "agent"; Random.int 9999 |> string_of_int] in
+    let path =
+      [ "net"; "connman"; "agent"; Random.int 9999 |> string_of_int ]
+    in
     let%lwt () =
       Logs_lwt.debug ~src:log_src (fun m ->
           m "creating connman agent at %s" (String.concat "/" path)
       )
     in
-    let obj = OBus_object.make ~interfaces:[interface on_error] path in
+    let obj = OBus_object.make ~interfaces:[ interface on_error ] path in
     let () = OBus_object.attach obj input in
     let () = OBus_object.export system_bus obj in
     return (path, obj)
@@ -266,7 +277,7 @@ module Service = struct
     | WPS
   [@@deriving sexp, protocol ~driver:(module Jsonm)]
 
-  let supported_security_protocols = [None; WEP; PSK]
+  let supported_security_protocols = [ None; WEP; PSK ]
 
   let string_of_security s = sexp_of_security s |> Sexplib.Sexp.to_string
 
@@ -369,9 +380,12 @@ module Service = struct
       ; port
       ; credentials=
           ( match (user, password) with
-          | Some "", _ -> None
-          | Some u, Some p -> Some {user= u; password= p}
-          | _ -> None
+          | Some "", _ ->
+              None
+          | Some u, Some p ->
+              Some { user= u; password= p }
+          | _ ->
+              None
           )
       }
 
@@ -388,12 +402,14 @@ module Service = struct
                         { user= Uri.pct_decode user
                         ; password= Uri.pct_decode password
                         }
-                  | _ -> None
+                  | _ ->
+                      None
                   )
               ; host
               ; port
               }
-        | _ -> None
+        | _ ->
+            None
       else None
 
     let to_uri ~include_userinfo t =
@@ -437,21 +453,34 @@ module Service = struct
   (* Helper to parse a service from OBus *)
   let of_obus manager context (path, properties) =
     let state_of_string = function
-      | "idle" -> Some Idle
-      | "failure" -> Some Failure
-      | "association" -> Some Association
-      | "configuration" -> Some Configuration
-      | "ready" -> Some Ready
-      | "disconnect" -> Some Disconnect
-      | "online" -> Some Online
-      | _ -> None
+      | "idle" ->
+          Some Idle
+      | "failure" ->
+          Some Failure
+      | "association" ->
+          Some Association
+      | "configuration" ->
+          Some Configuration
+      | "ready" ->
+          Some Ready
+      | "disconnect" ->
+          Some Disconnect
+      | "online" ->
+          Some Online
+      | _ ->
+          None
     in
     let security_of_string = function
-      | "none" -> Some None
-      | "psk" -> Some PSK
-      | "wps" -> Some WPS
-      | "ieee8021x" -> Some IEEE8021x
-      | _ -> None
+      | "none" ->
+          Some None
+      | "psk" ->
+          Some PSK
+      | "wps" ->
+          Some WPS
+      | "ieee8021x" ->
+          Some IEEE8021x
+      | _ ->
+          None
     in
     let security_of_obus v =
       let str_list = string_list_of_obus v in
@@ -540,10 +569,7 @@ module Service = struct
     )
 
   let is_connected t =
-    match t.state with
-    | Ready -> true
-    | Online -> true
-    | _ -> false
+    match t.state with Ready -> true | Online -> true | _ -> false
 
   let set_property service ~name ~value =
     OBus_method.call Connman_interfaces.Net_connman_Service.m_SetProperty
@@ -553,7 +579,7 @@ module Service = struct
     let dict =
       OBus_value.C.make_single
         OBus_value.C.(dict string variant)
-        [("Method", OBus_value.C.(make_single basic_string) "direct")]
+        [ ("Method", OBus_value.C.(make_single basic_string) "direct") ]
     in
     set_property service ~name:"Proxy.Configuration" ~value:dict
 
@@ -564,7 +590,7 @@ module Service = struct
         [ ("Method", OBus_value.C.(make_single basic_string) "manual")
         ; ( "Servers"
           , OBus_value.C.(make_single (array basic_string))
-              [Proxy.to_uri ~include_userinfo:true proxy |> Uri.to_string]
+              [ Proxy.to_uri ~include_userinfo:true proxy |> Uri.to_string ]
           )
         ]
     in
@@ -586,7 +612,7 @@ module Service = struct
     let dict =
       OBus_value.C.make_single
         OBus_value.C.(dict string variant)
-        [("Method", OBus_value.C.(make_single basic_string) "dhcp")]
+        [ ("Method", OBus_value.C.(make_single basic_string) "dhcp") ]
     in
     set_property service ~name:"IPv4.Configuration" ~value:dict
 
@@ -624,7 +650,8 @@ module Service = struct
     in
     let%lwt _ = Lwt_result.catch destroy_agent in
     match (obus_resp, !agent_reported_error) with
-    | Ok _, _ -> Lwt.return ()
+    | Ok _, _ ->
+        Lwt.return ()
     | Error _, Some (ManagerError InvalidKey) ->
         Lwt.fail_with
           "Password is not valid or client is blocked. Please check the \

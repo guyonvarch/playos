@@ -52,7 +52,8 @@ let main debug port =
   let%lwt () =
     (* Initialize Network, parallel to starting server *)
     ( match%lwt Network.init ~connman with
-    | Ok () -> return_unit
+    | Ok () ->
+        return_unit
     | Error exn ->
         Logs_lwt.warn (fun m ->
             m "network initialization failed: %s" (Printexc.to_string exn)
@@ -70,13 +71,13 @@ let main debug port =
 let () =
   let open Cmdliner in
   let debug_a =
-    Arg.(flag (info ~doc:"Enable debug output." ["d"; "debug"]) |> value)
+    Arg.(flag (info ~doc:"Enable debug output." [ "d"; "debug" ]) |> value)
   in
   let port_a =
     Arg.(
       opt int 3333
         (info ~doc:"Port on which to start gui (http server)." ~docv:"PORT"
-           ["p"; "port"]
+           [ "p"; "port" ]
         )
       |> value
     )

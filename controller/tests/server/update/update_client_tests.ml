@@ -26,7 +26,8 @@ type proxy_param =
 (* returns (proxy, server_url) pair *)
 let process_proxy_spec spec server_url =
   match spec with
-  | NoProxy -> (None, server_url)
+  | NoProxy ->
+      (None, server_url)
   | UseMockServer ->
       (* pretend mock server is a proxy, i.e. use an invalid base_url,
          and the actual server_url for the proxy *)
@@ -35,13 +36,15 @@ let process_proxy_spec spec server_url =
            to CONNECT and then this whole setup doesn't work *)
         Uri.of_string "http://some-invalid-url.local/"
       )
-  | Custom p -> (p |> Uri.of_string |> Option.some, server_url)
+  | Custom p ->
+      (p |> Uri.of_string |> Option.some, server_url)
 
 let rec wait_for_mock_server ?(timeout = 0.2) ?(remaining_tries = 3) url =
   let status_endpoint = Uri.of_string (url ^ "ready") in
   let%lwt rez = Curl.request status_endpoint in
   match rez with
-  | Curl.RequestSuccess _ -> Lwt.return ()
+  | Curl.RequestSuccess _ ->
+      Lwt.return ()
   | Curl.RequestFailure err ->
       let err_msg = Curl.pretty_print_error err in
       print_endline ("MockServer not up, err was: " ^ err_msg) ;

@@ -26,7 +26,7 @@ type 'a timeout_params =
   ; on_timeout: unit -> 'a Lwt.t
   }
 
-let with_timeout {duration; on_timeout} f =
+let with_timeout { duration; on_timeout } f =
   [ f ()
   ; (let%lwt () = Lwt_unix.sleep duration in
      on_timeout ()
@@ -40,7 +40,8 @@ let error_handling =
   let filter handler req =
     (* Catch any exceptions that previously escaped Lwt *)
     match%lwt Lwt_result.catch (fun () -> handler req) with
-    | Ok res -> return res
+    | Ok res ->
+        return res
     | Error exn -> (
         let%lwt () =
           Logs_lwt.err (fun m -> m "GUI Error: %s" (Printexc.to_string exn))
@@ -95,19 +96,24 @@ module LocalizationGui = struct
           let group_id, name =
             match String.split_on_char '/' re_spaced |> List.rev with
             (* An unscoped entry, e.g. UTC. *)
-            | [singleton] -> (singleton, singleton)
+            | [ singleton ] ->
+                (singleton, singleton)
             (* A humble entry, likely scoped to continent, e.g. Europe/Amsterdam. *)
-            | [name; group_id] -> (group_id, name)
+            | [ name; group_id ] ->
+                (group_id, name)
             (* A multi-hierarchical entry, e.g. America/Argentina/Buenos_Aires. *)
             | name :: group_sections ->
                 (String.concat "/" (List.rev group_sections), name)
             (* Not a sensible outcome. *)
-            | [] -> (re_spaced, re_spaced)
+            | [] ->
+                (re_spaced, re_spaced)
           in
           let prev_entries =
             match List.assoc_opt group_id groups with
-            | Some entries -> entries
-            | None -> []
+            | Some entries ->
+                entries
+            | None ->
+                []
           in
           (group_id, (tz, name) :: prev_entries)
           :: List.remove_assoc group_id groups
@@ -163,8 +169,10 @@ module LocalizationGui = struct
     let%lwt form_data = urlencoded_pairs_of_body req in
     let%lwt _ =
       match form_data |> List.assoc_opt "timezone" with
-      | Some [tz_id] -> Timedate.set_timezone tz_id
-      | _ -> return ()
+      | Some [ tz_id ] ->
+          Timedate.set_timezone tz_id
+      | _ ->
+          return ()
     in
     "/localization" |> Uri.of_string |> redirect'
 
@@ -172,8 +180,10 @@ module LocalizationGui = struct
     let%lwt form_data = urlencoded_pairs_of_body req in
     let%lwt _ =
       match form_data |> List.assoc_opt "lang" with
-      | Some [lang] -> Locale.set_lang lang
-      | _ -> return ()
+      | Some [ lang ] ->
+          Locale.set_lang lang
+      | _ ->
+          return ()
     in
     "/localization" |> Uri.of_string |> redirect'
 
@@ -181,8 +191,10 @@ module LocalizationGui = struct
     let%lwt form_data = urlencoded_pairs_of_body req in
     let%lwt _ =
       match form_data |> List.assoc_opt "keymap" with
-      | Some [keymap] -> Locale.set_keymap keymap
-      | _ -> return ()
+      | Some [ keymap ] ->
+          Locale.set_keymap keymap
+      | _ ->
+          return ()
     in
     "/localization" |> Uri.of_string |> redirect'
 
@@ -190,12 +202,15 @@ module LocalizationGui = struct
     let%lwt form_data = urlencoded_pairs_of_body req in
     let%lwt _ =
       match form_data |> List.assoc_opt "scaling" with
-      | Some [opt] -> (
+      | Some [ opt ] -> (
         match Screen_settings.scaling_of_string opt with
-        | Some s -> Screen_settings.set_scaling s
-        | None -> fail_with (Format.sprintf "Unknown screen setting: %s" opt)
+        | Some s ->
+            Screen_settings.set_scaling s
+        | None ->
+            fail_with (Format.sprintf "Unknown screen setting: %s" opt)
       )
-      | _ -> return ()
+      | _ ->
+          return ()
     in
     "/localization" |> Uri.of_string |> redirect'
 
@@ -221,20 +236,25 @@ module NetworkGui = struct
         p |> Service.Proxy.to_uri ~include_userinfo:false |> Uri.to_string
       in
       match p.credentials with
-      | Some {user; password} ->
+      | Some { user; password } ->
           let password_indication =
             if password = "" then "" else ", password: *****"
           in
           uri ^ " (user: " ^ user ^ password_indication ^ ")"
-      | None -> uri
+      | None ->
+          uri
     in
     let params : Network_list_page.params =
-      {proxy= proxy |> Option.map pp_proxy; services= all_services; interfaces}
+      { proxy= proxy |> Option.map pp_proxy
+      ; services= all_services
+      ; interfaces
+      }
     in
     match header "accept" req with
     | Some "application/json" ->
         Lwt.return @@ resp_json @@ Network_list_page.params_to_jsonm params
-    | _ -> Lwt.return (page (Network_list_page.html params))
+    | _ ->
+        Lwt.return (page (Network_list_page.html params))
 
   (** Internet status **)
   let internet_status ~connman _ =
@@ -258,8 +278,10 @@ module NetworkGui = struct
   let with_service ~connman id =
     let%lwt services = Connman.Manager.get_services connman in
     match List.find_opt (fun s -> s.Service.id = id) services with
-    | Some s -> return s
-    | None -> fail_with (Format.sprintf "Service does not exist (%s)" id)
+    | Some s ->
+        return s
+    | None ->
+        fail_with (Format.sprintf "Service does not exist (%s)" id)
 
   let details ~connman req =
     let service_id = param req "id" in
@@ -272,7 +294,8 @@ module NetworkGui = struct
     let non_empty s = if s = "" then None else Some s in
     let opt_int_of_string s = try Some (int_of_string s) with _ -> None in
     match form_data |> List.assoc_opt "proxy_enabled" with
-    | None -> return None
+    | None ->
+        return None
     | Some _ -> (
         let host_input =
           form_data |> List.assoc "proxy_host" |> List.hd |> non_empty
@@ -291,7 +314,7 @@ module NetworkGui = struct
         in
         let password =
           match (keep_password, current_proxy_opt) with
-          | true, Some {host; port; credentials= Some {user; password}} ->
+          | true, Some { host; port; credentials= Some { user; password } } ->
               if
                 host_input = Some host && port_input = Some port
                 && user_input = Some user
@@ -307,7 +330,8 @@ module NetworkGui = struct
           | true, _ ->
               Error
                 "Failure to retrieve proxy password. Please re-submit the form."
-          | _ -> Ok password_input
+          | _ ->
+              Ok password_input
         in
         match (host_input, port_input, user_input, password) with
         (* Configuration without credentials was submitted *)
@@ -326,7 +350,8 @@ module NetworkGui = struct
         | _, _, None, Ok (Some _) ->
             fail_with "A user is required if a password is provided"
         (* Password retrieval error *)
-        | _, _, _, Error msg -> fail_with msg
+        | _, _, _, Error msg ->
+            fail_with msg
         (* Incomplete server information *)
         | _ ->
             fail_with "A host and port are required to configure a proxy server"
@@ -364,8 +389,10 @@ module NetworkGui = struct
     let%lwt form_data = urlencoded_pairs_of_body req in
     let passphrase =
       match form_data |> List.assoc_opt "passphrase" with
-      | Some [passphrase] -> Connman.Agent.Passphrase passphrase
-      | _ -> Connman.Agent.None
+      | Some [ passphrase ] ->
+          Connman.Agent.Passphrase passphrase
+      | _ ->
+          Connman.Agent.None
     in
     let%lwt service = with_service ~connman (param req "id") in
     let%lwt () = Connman.Service.connect ~input:passphrase service in
@@ -381,8 +408,10 @@ module NetworkGui = struct
     let%lwt current_proxy = Manager.get_default_proxy connman in
     let%lwt () =
       match%lwt make_proxy current_proxy form_data with
-      | None -> Connman.Service.set_direct_proxy service
-      | Some proxy -> Connman.Service.set_manual_proxy service proxy
+      | None ->
+          Connman.Service.set_direct_proxy service
+      | Some proxy ->
+          Connman.Service.set_manual_proxy service proxy
     in
     (* Grant time for changes to take effect and return to overview *)
     let%lwt () = Lwt_unix.sleep 0.5 in
@@ -411,9 +440,9 @@ end
 module StatusGui = struct
   open Status_page
 
-  let shutdown () = Util.run_cmd_no_stdout [|"halt"; "--poweroff"|]
+  let shutdown () = Util.run_cmd_no_stdout [| "halt"; "--poweroff" |]
 
-  let reboot () = Util.run_cmd_no_stdout [|"reboot"|]
+  let reboot () = Util.run_cmd_no_stdout [| "reboot" |]
 
   let switch_slot rauc target_slot =
     let%lwt () = Rauc.mark_active rauc target_slot in
@@ -442,14 +471,15 @@ module StatusGui = struct
       (* RAUC status is not meaningful while installing
          https://github.com/rauc/rauc/issues/416
       *)
-      | Update.Installing _ -> Lwt.return Status_page.Installing
+      | Update.Installing _ ->
+          Lwt.return Status_page.Installing
       | _ ->
           Lwt_result.catch (fun () -> Rauc.get_status rauc)
           >|= Result.fold
                 ~ok:(fun s -> Status_page.Status s)
                 ~error:(fun e -> Status_page.Error (Printexc.to_string e))
     in
-    {health= health_state; update= update_state; rauc; booted_slot} |> return
+    { health= health_state; update= update_state; rauc; booted_slot } |> return
 
   let exec_and_resp_ok f req = f req >|= (fun _ -> `String "Ok") >|= respond
 
@@ -494,7 +524,8 @@ end
 module RemoteMaintenanceGui = struct
   let rec wait_until_zerotier_is_on () =
     match%lwt Zerotier.get_status () with
-    | Ok _ -> redirect' (Uri.of_string "/info")
+    | Ok _ ->
+        redirect' (Uri.of_string "/info")
     | Error _ ->
         let%lwt () = Lwt_unix.sleep 0.1 in
         wait_until_zerotier_is_on ()

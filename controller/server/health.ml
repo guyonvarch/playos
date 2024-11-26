@@ -45,7 +45,8 @@ let rec run ~systemd ~rauc ~set_state =
             Rauc.get_booted_slot rauc >>= Rauc.mark_good rauc
         )
       with
-      | Ok () -> set Good
+      | Ok () ->
+          set Good
       | Error exn ->
           set (Bad ("Failed to mark system good: " ^ Printexc.to_string exn))
     )

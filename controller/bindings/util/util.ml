@@ -33,7 +33,7 @@ let read_from_file log_src path =
 
 let write_to_file log_src path str =
   try
-    let%lwt fd = Lwt_unix.openfile path [O_WRONLY; O_CREAT; O_TRUNC] 0o755 in
+    let%lwt fd = Lwt_unix.openfile path [ O_WRONLY; O_CREAT; O_TRUNC ] 0o755 in
     let%lwt _bytes_written =
       Lwt_unix.write_string fd str 0 (String.length str)
     in
@@ -56,5 +56,7 @@ let write_to_file log_src path str =
 
 let run_cmd_no_stdout cmd =
   match%lwt Lwt_process.(exec ~stdout:`Dev_null ~stderr:`Keep ("", cmd)) with
-  | Unix.WEXITED 0 -> return_unit
-  | _ -> Lwt.fail_with (Format.sprintf "%s failed" cmd.(0))
+  | Unix.WEXITED 0 ->
+      return_unit
+  | _ ->
+      Lwt.fail_with (Format.sprintf "%s failed" cmd.(0))

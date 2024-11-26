@@ -8,4 +8,4 @@ type params =
   ; current_scaling: Screen_settings.scaling
   }
 
-val html : params -> [> Html_types.html] Tyxml.Html.elt
+val html : params -> [> Html_types.html ] Tyxml.Html.elt

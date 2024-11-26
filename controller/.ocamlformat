@@ -5,4 +5,8 @@ margin = 80
 indicate-multiline-delimiters = closing-on-separate-line
 type-decl = sparse
 doc-comments = before
-break-cases = fit-or-vertical
+
+space-around-arrays = true
+space-around-lists = true
+space-around-records = true
+space-around-variants = true

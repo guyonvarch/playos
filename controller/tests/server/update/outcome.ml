@@ -11,7 +11,7 @@ type expected_outcomes =
    outcomes: installing the update or not installing the update.
 *)
 let slot_spec_to_outcome
-    ({booted_slot; primary_slot; input_versions} : Helpers.system_slot_spec) =
+    ({ booted_slot; primary_slot; input_versions } : Helpers.system_slot_spec) =
   let booted_is_out_of_date =
     Semver.compare input_versions.booted input_versions.latest = -1
   in
@@ -26,18 +26,27 @@ let slot_spec_to_outcome
    the expected outcome as determined by [slot_spec_to_outcome] *)
 let state_matches_expected_outcome state outcome =
   match (outcome, state) with
-  | InstallVsn v1, Update.Downloading v2 -> Semver.to_string v1 = v2
-  | InstallVsn _, _ -> false
-  | DoNothingOrProduceWarning, Update.ErrorGettingVersionInfo _ -> true
-  | DoNothingOrProduceWarning, Update.UpToDate _ -> true
-  | DoNothingOrProduceWarning, Update.OutOfDateVersionSelected -> true
-  | DoNothingOrProduceWarning, Update.RebootRequired -> true
-  | DoNothingOrProduceWarning, Update.ReinstallRequired -> true
+  | InstallVsn v1, Update.Downloading v2 ->
+      Semver.to_string v1 = v2
+  | InstallVsn _, _ ->
+      false
+  | DoNothingOrProduceWarning, Update.ErrorGettingVersionInfo _ ->
+      true
+  | DoNothingOrProduceWarning, Update.UpToDate _ ->
+      true
+  | DoNothingOrProduceWarning, Update.OutOfDateVersionSelected ->
+      true
+  | DoNothingOrProduceWarning, Update.RebootRequired ->
+      true
+  | DoNothingOrProduceWarning, Update.ReinstallRequired ->
+      true
   (* should not _directly_ return to GettingVersionInfo state *)
-  | DoNothingOrProduceWarning, Update.GettingVersionInfo -> false
+  | DoNothingOrProduceWarning, Update.GettingVersionInfo ->
+      false
   (* all the other states are part of the installation process
      and are treated as errors *)
-  | DoNothingOrProduceWarning, _ -> false
+  | DoNothingOrProduceWarning, _ ->
+      false
 
 (** Tests if the input UpdateService run with the given [Helpers.system_slot_spec]
     [case] scenario produces the expected outcome state (defined by

@@ -10,4 +10,4 @@ type params =
   ; booted_slot: Rauc.Slot.t
   }
 
-val html : params -> [> Html_types.html] Tyxml.Html.elt
+val html : params -> [> Html_types.html ] Tyxml.Html.elt
