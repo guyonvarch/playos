@@ -8,9 +8,9 @@ let log_src = Logs.Src.create "update"
 (** Type containing version information *)
 type version_info =
   { (* the latest available version *)
-    latest: Semver.t (* version of currently booted system *)
-  ; booted: Semver.t (* version of inactive system *)
-  ; inactive: Semver.t
+    latest : Semver.t (* version of currently booted system *)
+  ; booted : Semver.t (* version of inactive system *)
+  ; inactive : Semver.t
   }
 
 let sexp_of_version_info v =
@@ -42,8 +42,8 @@ type state =
 type sleep_duration = float (* seconds *)
 
 type config =
-  { error_backoff_duration: sleep_duration
-  ; check_for_updates_interval: sleep_duration
+  { error_backoff_duration : sleep_duration
+  ; check_for_updates_interval : sleep_duration
   }
 
 module type ServiceDeps = sig
@@ -118,10 +118,10 @@ module Make (Deps : ServiceDeps) : UpdateService = struct
     let system_b_version = rauc_status.b.version |> semver_of_string in
     match%lwt RaucI.get_booted_slot () with
     | SystemA ->
-        { latest; booted= system_a_version; inactive= system_b_version }
+        { latest; booted = system_a_version; inactive = system_b_version }
         |> return
     | SystemB ->
-        { latest; booted= system_b_version; inactive= system_a_version }
+        { latest; booted = system_b_version; inactive = system_a_version }
         |> return
 
   (* Update mechanism process *)
@@ -212,7 +212,9 @@ module Make (Deps : ServiceDeps) : UpdateService = struct
 end
 
 let default_config : config =
-  { error_backoff_duration= 30.0; check_for_updates_interval= 1. *. 60. *. 60. }
+  { error_backoff_duration = 30.0
+  ; check_for_updates_interval = 1. *. 60. *. 60.
+  }
 
 let build_deps ~connman ~(rauc : Rauc.t) : (module ServiceDeps) Lwt.t =
   let config = default_config in

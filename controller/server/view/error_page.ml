@@ -1,8 +1,8 @@
 open Tyxml.Html
 
 type params =
-  { message: string
-  ; request: string
+  { message : string
+  ; request : string
   }
 
 let html { message; request } =

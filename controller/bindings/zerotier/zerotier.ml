@@ -7,7 +7,7 @@ let base_url = Uri.make ~scheme:"http" ~host:"localhost" ~port:9993 ()
 let get_authtoken () =
   Util.read_from_file log_src "/var/lib/zerotier-one/authtoken.secret"
 
-type status = { address: string }
+type status = { address : string }
 
 let get_status () =
   Lwt_result.catch (fun () ->

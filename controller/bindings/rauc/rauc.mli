@@ -13,12 +13,12 @@ module Slot : sig
   val string_of_t : t -> string
 
   type status =
-    { device: string
-    ; class': string
-    ; state: string
+    { device : string
+    ; class' : string
+    ; state : string
           (* Fields that are only available when installed via RAUC (not from installer script)*)
-    ; version: string
-    ; installed_timestamp: string
+    ; version : string
+    ; installed_timestamp : string
     }
   [@@deriving sexp]
 end
@@ -35,8 +35,8 @@ val mark_active : t -> Slot.t -> unit Lwt.t
 
 (** Rauc status *)
 type status =
-  { a: Slot.status
-  ; b: Slot.status
+  { a : Slot.status
+  ; b : Slot.status
   }
 [@@deriving sexp]
 

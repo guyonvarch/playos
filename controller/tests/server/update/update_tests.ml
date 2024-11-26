@@ -89,7 +89,7 @@ let delete_downloaded_bundle_on_err
 let sleep_after_error_or_check_test () =
   (* long-ish timeouts, but these will run in parallel, so no biggie *)
   let test_config =
-    { error_backoff_duration= 1.0; check_for_updates_interval= 2.0 }
+    { error_backoff_duration = 1.0; check_for_updates_interval = 2.0 }
   in
   let ({ update_service; _ } : Helpers.test_context) =
     Helpers.init_test_deps ~test_config ()
@@ -133,42 +133,42 @@ let sleep_after_error_or_check_test () =
 
 let both_newer_than_upstream =
   let input_versions =
-    { booted= Helpers.v3; inactive= Helpers.v2; latest= Helpers.v1 }
+    { booted = Helpers.v3; inactive = Helpers.v2; latest = Helpers.v1 }
   in
   let expected_state = UpToDate input_versions in
   Scenario.scenario_from_system_spec ~input_versions expected_state
 
 let booted_newer_secondary_older =
   let input_versions =
-    { latest= Helpers.v2; booted= Helpers.v3; inactive= Helpers.v1 }
+    { latest = Helpers.v2; booted = Helpers.v3; inactive = Helpers.v1 }
   in
   let expected_state = UpToDate input_versions in
   Scenario.scenario_from_system_spec ~input_versions expected_state
 
 let booted_older_secondary_newer =
   let input_versions =
-    { latest= Helpers.v2; booted= Helpers.v1; inactive= Helpers.v3 }
+    { latest = Helpers.v2; booted = Helpers.v1; inactive = Helpers.v3 }
   in
   let expected_state = OutOfDateVersionSelected in
   Scenario.scenario_from_system_spec ~input_versions expected_state
 
 let booted_current_secondary_current =
   let input_versions =
-    { latest= Helpers.v2; booted= Helpers.v2; inactive= Helpers.v2 }
+    { latest = Helpers.v2; booted = Helpers.v2; inactive = Helpers.v2 }
   in
   let expected_state = UpToDate input_versions in
   Scenario.scenario_from_system_spec ~input_versions expected_state
 
 let booted_current_secondary_older =
   let input_versions =
-    { latest= Helpers.v2; booted= Helpers.v2; inactive= Helpers.v1 }
+    { latest = Helpers.v2; booted = Helpers.v2; inactive = Helpers.v1 }
   in
   let expected_state = UpToDate input_versions in
   Scenario.scenario_from_system_spec ~input_versions expected_state
 
 let booted_older_secondary_current =
   let input_versions =
-    { latest= Helpers.v2; booted= Helpers.v1; inactive= Helpers.v2 }
+    { latest = Helpers.v2; booted = Helpers.v1; inactive = Helpers.v2 }
   in
   let expected_state = OutOfDateVersionSelected in
   Scenario.scenario_from_system_spec ~input_versions expected_state

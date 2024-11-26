@@ -15,11 +15,11 @@ module Technology : sig
       Note that not all properties are encoded.
   *)
   type t =
-    { _proxy: (OBus_proxy.t[@sexp.opaque])
-    ; name: string
-    ; type': type'
-    ; powered: bool
-    ; connected: bool
+    { _proxy : (OBus_proxy.t[@sexp.opaque])
+    ; name : string
+    ; type' : type'
+    ; powered : bool
+    ; connected : bool
     }
   [@@deriving sexp, protocol ~driver:(module Jsonm)]
 
@@ -73,10 +73,10 @@ module Service : sig
   (** IPv4 properties *)
   module IPv4 : sig
     type t =
-      { method': string
-      ; address: string
-      ; netmask: string
-      ; gateway: string option
+      { method' : string
+      ; address : string
+      ; netmask : string
+      ; gateway : string option
       }
     [@@deriving sexp, protocol ~driver:(module Jsonm)]
   end
@@ -84,11 +84,11 @@ module Service : sig
   (** IPv6 properties *)
   module IPv6 : sig
     type t =
-      { method': string
-      ; address: string
-      ; prefix_length: int
-      ; gateway: string option
-      ; privacy: string
+      { method' : string
+      ; address : string
+      ; prefix_length : int
+      ; gateway : string option
+      ; privacy : string
       }
     [@@deriving sexp, protocol ~driver:(module Jsonm)]
   end
@@ -96,25 +96,25 @@ module Service : sig
   (** Ethernet properties *)
   module Ethernet : sig
     type t =
-      { method': string
-      ; interface: string
-      ; address: string
-      ; mtu: int
+      { method' : string
+      ; interface : string
+      ; address : string
+      ; mtu : int
       }
     [@@deriving sexp, protocol ~driver:(module Jsonm)]
   end
 
   module Proxy : sig
     type credentials =
-      { user: string
-      ; password: (string[@sexp.opaque])
+      { user : string
+      ; password : (string[@sexp.opaque])
       }
     [@@deriving sexp, protocol ~driver:(module Jsonm)]
 
     type t =
-      { host: string
-      ; port: int
-      ; credentials: credentials option
+      { host : string
+      ; port : int
+      ; credentials : credentials option
       }
     [@@deriving sexp, protocol ~driver:(module Jsonm)]
 
@@ -144,21 +144,21 @@ module Service : sig
       Note that not all properties are encoded.
   *)
   type t =
-    { _proxy: (OBus_proxy.t[@sexp.opaque])
-    ; _manager: (OBus_proxy.t[@sexp.opaque])
-    ; id: string
-    ; name: string
-    ; type': Technology.type'
-    ; security: security list
-    ; state: state
-    ; strength: int option
-    ; favorite: bool
-    ; autoconnect: bool
-    ; ipv4: IPv4.t option
-    ; ipv6: IPv6.t option
-    ; ethernet: Ethernet.t
-    ; proxy: Proxy.t option
-    ; nameservers: string list
+    { _proxy : (OBus_proxy.t[@sexp.opaque])
+    ; _manager : (OBus_proxy.t[@sexp.opaque])
+    ; id : string
+    ; name : string
+    ; type' : Technology.type'
+    ; security : security list
+    ; state : state
+    ; strength : int option
+    ; favorite : bool
+    ; autoconnect : bool
+    ; ipv4 : IPv4.t option
+    ; ipv6 : IPv6.t option
+    ; ethernet : Ethernet.t
+    ; proxy : Proxy.t option
+    ; nameservers : string list
     }
   [@@deriving sexp, protocol ~driver:(module Jsonm)]
 

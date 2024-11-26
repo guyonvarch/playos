@@ -1,10 +1,10 @@
 version = 0.26.1
 
 profile = ocamlformat
-margin = 80
 indicate-multiline-delimiters = closing-on-separate-line
 type-decl = sparse
 doc-comments = before
+field-space = loose
 
 space-around-arrays = true
 space-around-lists = true

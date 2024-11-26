@@ -46,11 +46,11 @@ module Technology = struct
         None
 
   type t =
-    { _proxy: (OBus_proxy.t[@sexp.opaque])
-    ; name: string
-    ; type': type'
-    ; powered: bool
-    ; connected: bool
+    { _proxy : (OBus_proxy.t[@sexp.opaque])
+    ; name : string
+    ; type' : type'
+    ; powered : bool
+    ; connected : bool
     }
   [@@deriving sexp, protocol ~driver:(module Jsonm)]
 
@@ -223,7 +223,7 @@ module Agent = struct
           Lwt.fail obus_exn
     in
     Connman_interfaces.Net_connman_Agent.make
-      { m_ReportError=
+      { m_ReportError =
           (fun obj (service, msg) ->
             let%lwt () =
               Logs_lwt.err ~src:log_src (fun m ->
@@ -232,10 +232,10 @@ module Agent = struct
             in
             on_error (ManagerError (manager_error_of_string msg))
           )
-      ; m_RequestInput= wrap_req request_input
-      ; m_RequestBrowser= wrap_req request_browser
-      ; m_Cancel= (fun obj () -> return_unit)
-      ; m_Release= (fun obj () -> return_unit)
+      ; m_RequestInput = wrap_req request_input
+      ; m_RequestBrowser = wrap_req request_browser
+      ; m_Cancel = (fun obj () -> return_unit)
+      ; m_Release = (fun obj () -> return_unit)
       }
 
   let create ~(input : input) on_error =
@@ -283,10 +283,10 @@ module Service = struct
 
   module IPv4 = struct
     type t =
-      { method': string
-      ; address: string
-      ; netmask: string
-      ; gateway: string option
+      { method' : string
+      ; address : string
+      ; netmask : string
+      ; gateway : string option
       }
     [@@deriving sexp, protocol ~driver:(module Jsonm)]
 
@@ -294,12 +294,13 @@ module Service = struct
       (fun () ->
         let open OBus_value.C in
         let properties = v |> cast_single (dict string variant) in
-        { method'= properties |> List.assoc "Method" |> cast_single basic_string
-        ; address=
+        { method' =
+            properties |> List.assoc "Method" |> cast_single basic_string
+        ; address =
             properties |> List.assoc "Address" |> cast_single basic_string
-        ; netmask=
+        ; netmask =
             properties |> List.assoc "Netmask" |> cast_single basic_string
-        ; gateway=
+        ; gateway =
             properties |> List.assoc_opt "Gateway"
             |> Option.map (cast_single basic_string)
         }
@@ -309,11 +310,11 @@ module Service = struct
 
   module IPv6 = struct
     type t =
-      { method': string
-      ; address: string
-      ; prefix_length: int
-      ; gateway: string option
-      ; privacy: string
+      { method' : string
+      ; address : string
+      ; prefix_length : int
+      ; gateway : string option
+      ; privacy : string
       }
     [@@deriving sexp, protocol ~driver:(module Jsonm)]
 
@@ -321,16 +322,17 @@ module Service = struct
       (fun () ->
         let open OBus_value.C in
         let properties = v |> cast_single (dict string variant) in
-        { method'= properties |> List.assoc "Method" |> cast_single basic_string
-        ; address=
+        { method' =
+            properties |> List.assoc "Method" |> cast_single basic_string
+        ; address =
             properties |> List.assoc "Address" |> cast_single basic_string
-        ; prefix_length=
+        ; prefix_length =
             properties |> List.assoc "PrefixLength" |> cast_single basic_byte
             |> int_of_char
-        ; gateway=
+        ; gateway =
             properties |> List.assoc_opt "Gateway"
             |> Option.map (cast_single basic_string)
-        ; privacy=
+        ; privacy =
             properties |> List.assoc "Privacy" |> cast_single basic_string
         }
       )
@@ -339,10 +341,10 @@ module Service = struct
 
   module Ethernet = struct
     type t =
-      { method': string
-      ; interface: string
-      ; address: string
-      ; mtu: int
+      { method' : string
+      ; interface : string
+      ; address : string
+      ; mtu : int
       }
     [@@deriving sexp, protocol ~driver:(module Jsonm)]
 
@@ -350,12 +352,13 @@ module Service = struct
       (fun () ->
         let open OBus_value.C in
         let properties = v |> cast_single (dict string variant) in
-        { method'= properties |> List.assoc "Method" |> cast_single basic_string
-        ; interface=
+        { method' =
+            properties |> List.assoc "Method" |> cast_single basic_string
+        ; interface =
             properties |> List.assoc "Interface" |> cast_single basic_string
-        ; address=
+        ; address =
             properties |> List.assoc "Address" |> cast_single basic_string
-        ; mtu= properties |> List.assoc "MTU" |> cast_single basic_uint16
+        ; mtu = properties |> List.assoc "MTU" |> cast_single basic_uint16
         }
       )
       |> CCResult.guard |> CCResult.to_opt
@@ -363,27 +366,27 @@ module Service = struct
 
   module Proxy = struct
     type credentials =
-      { user: string
-      ; password: (string[@sexp.opaque])
+      { user : string
+      ; password : (string[@sexp.opaque])
       }
     [@@deriving sexp, protocol ~driver:(module Jsonm)]
 
     type t =
-      { host: string
-      ; port: int
-      ; credentials: credentials option
+      { host : string
+      ; port : int
+      ; credentials : credentials option
       }
     [@@deriving sexp, protocol ~driver:(module Jsonm)]
 
     let make ?user ?password host port =
       { host
       ; port
-      ; credentials=
+      ; credentials =
           ( match (user, password) with
           | Some "", _ ->
               None
           | Some u, Some p ->
-              Some { user= u; password= p }
+              Some { user = u; password = p }
           | _ ->
               None
           )
@@ -395,12 +398,12 @@ module Service = struct
         match (Uri.scheme uri, Uri.host uri, Uri.port uri) with
         | Some "http", Some host, Some port ->
             Some
-              { credentials=
+              { credentials =
                   ( match (Uri.user uri, Uri.password uri) with
                   | Some user, Some password ->
                       Some
-                        { user= Uri.pct_decode user
-                        ; password= Uri.pct_decode password
+                        { user = Uri.pct_decode user
+                        ; password = Uri.pct_decode password
                         }
                   | _ ->
                       None
@@ -432,21 +435,21 @@ module Service = struct
   end
 
   type t =
-    { _proxy: (OBus_proxy.t[@sexp.opaque])
-    ; _manager: (OBus_proxy.t[@sexp.opaque])
-    ; id: string
-    ; name: string
-    ; type': Technology.type'
-    ; security: security list
-    ; state: state
-    ; strength: int option
-    ; favorite: bool
-    ; autoconnect: bool
-    ; ipv4: IPv4.t option
-    ; ipv6: IPv6.t option
-    ; ethernet: Ethernet.t
-    ; proxy: Proxy.t option
-    ; nameservers: string list
+    { _proxy : (OBus_proxy.t[@sexp.opaque])
+    ; _manager : (OBus_proxy.t[@sexp.opaque])
+    ; id : string
+    ; name : string
+    ; type' : Technology.type'
+    ; security : security list
+    ; state : state
+    ; strength : int option
+    ; favorite : bool
+    ; autoconnect : bool
+    ; ipv4 : IPv4.t option
+    ; ipv6 : IPv6.t option
+    ; ethernet : Ethernet.t
+    ; proxy : Proxy.t option
+    ; nameservers : string list
     }
   [@@deriving sexp, protocol ~driver:(module Jsonm)]
 
@@ -523,16 +526,16 @@ module Service = struct
           nameservers
           security
         ->
-          { _proxy= OBus_proxy.make ~peer:(OBus_context.sender context) ~path
-          ; _manager= manager
-          ; id= path |> CCList.last 1 |> CCList.hd
+          { _proxy = OBus_proxy.make ~peer:(OBus_context.sender context) ~path
+          ; _manager = manager
+          ; id = path |> CCList.last 1 |> CCList.hd
           ; name
           ; type'
           ; state
           ; strength
           ; favorite
           ; autoconnect
-          ; ipv4=
+          ; ipv4 =
               ( if Option.is_some ipv4_user_config then ipv4_user_config
                 else ipv4
               )
@@ -739,7 +742,7 @@ module Manager = struct
     let to_technology (path, properties) : Technology.t option =
       CCOption.(
         pure (fun name type' powered connected : Technology.t ->
-            { _proxy= OBus_proxy.make ~peer:(OBus_context.sender context) ~path
+            { _proxy = OBus_proxy.make ~peer:(OBus_context.sender context) ~path
             ; name
             ; type'
             ; powered

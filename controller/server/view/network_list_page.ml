@@ -36,9 +36,9 @@ let service_item ({ id; name; strength; ipv4 } as service) =
     ]
 
 type params =
-  { proxy: string option
-  ; services: Connman.Service.t list
-  ; interfaces: Network.Interface.t list
+  { proxy : string option
+  ; services : Connman.Service.t list
+  ; interfaces : Network.Interface.t list
   }
 [@@deriving protocol ~driver:(module Jsonm)]
 

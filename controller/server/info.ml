@@ -3,13 +3,13 @@ open Lwt
 let log_src = Logs.Src.create "info"
 
 type t =
-  { app: string
-  ; version: string
-  ; update_url: string
-  ; kiosk_url: string
-  ; machine_id: string
-  ; zerotier_address: string option
-  ; local_time: string
+  { app : string
+  ; version : string
+  ; update_url : string
+  ; kiosk_url : string
+  ; machine_id : string
+  ; zerotier_address : string option
+  ; local_time : string
   }
 
 include Config.System
@@ -49,7 +49,7 @@ let get () =
         return "No timezone"
   in
   let local_time = current_time ^ " (" ^ timezone ^ ")" in
-  { app= "PlayOS Controller"
+  { app = "PlayOS Controller"
   ; version
   ; update_url
   ; kiosk_url

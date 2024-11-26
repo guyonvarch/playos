@@ -47,10 +47,10 @@ let init ~connman =
 
 module Interface = struct
   type t =
-    { index: int
-    ; name: string
-    ; address: string
-    ; link_type: string
+    { index : int
+    ; name : string
+    ; address : string
+    ; link_type : string
     }
   [@@deriving sexp, protocol ~driver:(module Jsonm)]
 
@@ -67,10 +67,10 @@ module Interface = struct
 
   let of_json j =
     let dict = Ezjsonm.get_dict j in
-    { index= dict |> List.assoc "ifindex" |> Ezjsonm.get_int
-    ; name= dict |> List.assoc "ifname" |> Ezjsonm.get_string
-    ; address= dict |> List.assoc "address" |> Ezjsonm.get_string
-    ; link_type= dict |> List.assoc "link_type" |> Ezjsonm.get_string
+    { index = dict |> List.assoc "ifindex" |> Ezjsonm.get_int
+    ; name = dict |> List.assoc "ifname" |> Ezjsonm.get_string
+    ; address = dict |> List.assoc "address" |> Ezjsonm.get_string
+    ; link_type = dict |> List.assoc "link_type" |> Ezjsonm.get_string
     }
 
   let get_all () =

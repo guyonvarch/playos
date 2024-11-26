@@ -27,12 +27,12 @@ let statefmt (state : Update.state) : string =
 (* === Mock init and setup === *)
 
 let default_test_config : Update.config =
-  { error_backoff_duration= 0.01; check_for_updates_interval= 0.05 }
+  { error_backoff_duration = 0.01; check_for_updates_interval = 0.05 }
 
 type test_context =
-  { update_client: Mock_update_client.mock
-  ; rauc: Mock_rauc.mock
-  ; update_service: (module Update.UpdateService)
+  { update_client : Mock_update_client.mock
+  ; rauc : Mock_rauc.mock
+  ; update_service : (module Update.UpdateService)
   }
 
 (* see [init_test_deps] for usage *)
@@ -54,12 +54,12 @@ let init_test_deps ?(failure_gen_rauc = no_failure_gen)
     let config = test_config
   end in
   let module TestUpdateService = Update.Make (TestUpdateServiceDeps) in
-  { update_client; rauc; update_service= (module TestUpdateService) }
+  { update_client; rauc; update_service = (module TestUpdateService) }
 
 type system_slot_spec =
-  { booted_slot: Rauc.Slot.t
-  ; primary_slot: Rauc.Slot.t Option.t
-  ; input_versions: Update.version_info
+  { booted_slot : Rauc.Slot.t
+  ; primary_slot : Rauc.Slot.t Option.t
+  ; input_versions : Update.version_info
   }
 
 let slot_spec_to_string { booted_slot; primary_slot; input_versions } =
@@ -116,6 +116,6 @@ let all_possible_slot_spec_combos =
   List.map
     (fun (vsns, booted_slot, primary_slot) ->
       let vsn_info = vsn_triple_to_version_info vsns in
-      { booted_slot; primary_slot; input_versions= vsn_info }
+      { booted_slot; primary_slot; input_versions = vsn_info }
     )
     combos

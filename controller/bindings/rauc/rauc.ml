@@ -38,11 +38,11 @@ module Slot = struct
   let string_of_t = function SystemA -> "system.a" | SystemB -> "system.b"
 
   type status =
-    { device: string
-    ; class': string
-    ; state: string
-    ; version: string
-    ; installed_timestamp: string
+    { device : string
+    ; class' : string
+    ; state : string
+    ; version : string
+    ; installed_timestamp : string
     }
   [@@deriving sexp]
 end
@@ -65,8 +65,8 @@ let mark_good daemon slot = mark_slot daemon slot "good"
 let mark_active daemon slot = mark_slot daemon slot "active"
 
 type status =
-  { a: Slot.status
-  ; b: Slot.status
+  { a : Slot.status
+  ; b : Slot.status
   }
 [@@deriving sexp]
 
@@ -83,11 +83,11 @@ let slot_status_of_obus (o : (string * OBus_value.V.single) list) : Slot.status
     | _ ->
         failwith (Format.sprintf "could not get string from field %s" key)
   in
-  { device= get_string "device" o
-  ; class'= get_string "class" o
-  ; state= get_string "state" o
-  ; version= get_string "bundle.version" o
-  ; installed_timestamp= get_string "installed.timestamp" o
+  { device = get_string "device" o
+  ; class' = get_string "class" o
+  ; state = get_string "state" o
+  ; version = get_string "bundle.version" o
+  ; installed_timestamp = get_string "installed.timestamp" o
   }
 
 let get_status daemon =
@@ -95,8 +95,8 @@ let get_status daemon =
     OBus_method.call De_pengutronix_rauc_Installer.m_GetSlotStatus
       (proxy daemon) ()
   in
-  { a= slot_status_of_obus (List.assoc "system.a" status_assoc)
-  ; b= slot_status_of_obus (List.assoc "system.b" status_assoc)
+  { a = slot_status_of_obus (List.assoc "system.a" status_assoc)
+  ; b = slot_status_of_obus (List.assoc "system.b" status_assoc)
   }
   |> return
 

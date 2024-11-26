@@ -17,8 +17,8 @@ let get_random_available_port () =
   (Unix.string_of_inet_addr real_addr, real_port)
 
 type state =
-  { latest_version: string
-  ; available_bundles: (string, string) Hashtbl.t
+  { latest_version : string
+  ; available_bundles : (string, string) Hashtbl.t
   }
 
 type range = int Option.t * int Option.t
@@ -26,7 +26,7 @@ type range = int Option.t * int Option.t
 let mock_server () =
   object (self)
     val mutable state =
-      ref { latest_version= "0.0.0"; available_bundles= Hashtbl.create 5 }
+      ref { latest_version = "0.0.0"; available_bundles = Hashtbl.create 5 }
 
     method add_bundle vsn contents =
       Hashtbl.add !state.available_bundles vsn contents
@@ -34,7 +34,8 @@ let mock_server () =
     method remove_bundle vsn contents =
       Hashtbl.remove !state.available_bundles vsn
 
-    method set_latest_version vsn = state := { !state with latest_version= vsn }
+    method set_latest_version vsn =
+      state := { !state with latest_version = vsn }
 
     method private get_latest_handler _req =
       let resp = Response.of_string_body !state.latest_version in

@@ -8,10 +8,10 @@ type rauc_state =
 [@@deriving sexp]
 
 type params =
-  { health: Health.state
-  ; update: Update.state
-  ; rauc: rauc_state
-  ; booted_slot: Rauc.Slot.t
+  { health : Health.state
+  ; update : Update.state
+  ; rauc : rauc_state
+  ; booted_slot : Rauc.Slot.t
   }
 
 let definition term description =

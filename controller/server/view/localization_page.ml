@@ -1,10 +1,10 @@
 open Tyxml.Html
 
 type select_form_params =
-  { action_url: string
-  ; legend: string
-  ; select_name: string
-  ; placeholder: string option
+  { action_url : string
+  ; legend : string
+  ; select_name : string
+  ; placeholder : string option
   }
 
 let select_form params options =
@@ -46,10 +46,10 @@ let timezone_form timezone_groups current_timezone =
       (List.map (select_option current_timezone) timezones)
   in
   select_form
-    { action_url= "/localization/timezone"
-    ; legend= "Timezone"
-    ; select_name= "timezone"
-    ; placeholder=
+    { action_url = "/localization/timezone"
+    ; legend = "Timezone"
+    ; select_name = "timezone"
+    ; placeholder =
         ( if Option.is_none current_timezone then
             Some "Select your closest timezone…"
           else None
@@ -59,10 +59,10 @@ let timezone_form timezone_groups current_timezone =
 
 let language_form langs current_lang =
   select_form
-    { action_url= "/localization/lang"
-    ; legend= "Language"
-    ; select_name= "lang"
-    ; placeholder=
+    { action_url = "/localization/lang"
+    ; legend = "Language"
+    ; select_name = "lang"
+    ; placeholder =
         ( if Option.is_none current_lang then Some "Select your language…"
           else None
         )
@@ -71,10 +71,10 @@ let language_form langs current_lang =
 
 let keyboard_form keymaps current_keymap =
   select_form
-    { action_url= "/localization/keymap"
-    ; legend= "Keyboard"
-    ; select_name= "keymap"
-    ; placeholder=
+    { action_url = "/localization/keymap"
+    ; legend = "Keyboard"
+    ; select_name = "keymap"
+    ; placeholder =
         ( if Option.is_none current_keymap then
             Some "Select your keyboard layout…"
           else None
@@ -92,20 +92,20 @@ let scaling_form current_scaling =
            )
      )
   |> select_form
-       { action_url= "/localization/scaling"
-       ; legend= "Display resolution"
-       ; select_name= "scaling"
-       ; placeholder= None
+       { action_url = "/localization/scaling"
+       ; legend = "Display resolution"
+       ; select_name = "scaling"
+       ; placeholder = None
        }
 
 type params =
-  { timezone_groups: (string * (string * string) list) list
-  ; current_timezone: string option
-  ; langs: (string * string) list
-  ; current_lang: string option
-  ; keymaps: (string * string) list
-  ; current_keymap: string option
-  ; current_scaling: Screen_settings.scaling
+  { timezone_groups : (string * (string * string) list) list
+  ; current_timezone : string option
+  ; langs : (string * string) list
+  ; current_lang : string option
+  ; keymaps : (string * string) list
+  ; current_keymap : string option
+  ; current_scaling : Screen_settings.scaling
   }
 
 let html params =

@@ -6,10 +6,10 @@ val init : connman:Connman.Manager.t -> (unit, exn) Lwt_result.t
 module Interface : sig
   (** Network interface *)
   type t =
-    { index: int
-    ; name: string
-    ; address: string
-    ; link_type: string
+    { index : int
+    ; name : string
+    ; address : string
+    ; link_type : string
     }
   [@@deriving sexp, protocol ~driver:(module Jsonm)]
 

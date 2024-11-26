@@ -1,7 +1,7 @@
 type state =
-  { mutable latest_version: string
-  ; mutable available_bundles: (string, string) Hashtbl.t
-  ; mutable base_url: string
+  { mutable latest_version : string
+  ; mutable available_bundles : (string, string) Hashtbl.t
+  ; mutable base_url : string
   }
 
 let test_bundle_name = "TEST_PLAYOS_BUNDLE"
@@ -14,9 +14,9 @@ class mock failure_generator =
   in
   object (self)
     val state =
-      { latest_version= "0.0.0"
-      ; available_bundles= Hashtbl.create 5
-      ; base_url= Config.System.update_url
+      { latest_version = "0.0.0"
+      ; available_bundles = Hashtbl.create 5
+      ; base_url = Config.System.update_url
       }
 
     method add_bundle vsn contents =

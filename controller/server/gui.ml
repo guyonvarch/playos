@@ -22,8 +22,8 @@ let resp_json ?code json =
 let header key req = Cohttp.Header.get (Request.headers req) key
 
 type 'a timeout_params =
-  { duration: float
-  ; on_timeout: unit -> 'a Lwt.t
+  { duration : float
+  ; on_timeout : unit -> 'a Lwt.t
   }
 
 let with_timeout { duration; on_timeout } f =
@@ -59,10 +59,10 @@ let error_handling =
             Lwt.return
               (page
                  (Error_page.html
-                    { message=
+                    { message =
                         exn |> Sexplib.Std.sexp_of_exn
                         |> Sexplib.Sexp.to_string_hum
-                    ; request=
+                    ; request =
                         req |> Request.sexp_of_t |> Sexplib.Sexp.to_string_hum
                     }
                  )
@@ -245,8 +245,8 @@ module NetworkGui = struct
           uri
     in
     let params : Network_list_page.params =
-      { proxy= proxy |> Option.map pp_proxy
-      ; services= all_services
+      { proxy = proxy |> Option.map pp_proxy
+      ; services = all_services
       ; interfaces
       }
     in
@@ -314,7 +314,7 @@ module NetworkGui = struct
         in
         let password =
           match (keep_password, current_proxy_opt) with
-          | true, Some { host; port; credentials= Some { user; password } } ->
+          | true, Some { host; port; credentials = Some { user; password } } ->
               if
                 host_input = Some host && port_input = Some port
                 && user_input = Some user
@@ -479,7 +479,8 @@ module StatusGui = struct
                 ~ok:(fun s -> Status_page.Status s)
                 ~error:(fun e -> Status_page.Error (Printexc.to_string e))
     in
-    { health= health_state; update= update_state; rauc; booted_slot } |> return
+    { health = health_state; update = update_state; rauc; booted_slot }
+    |> return
 
   let exec_and_resp_ok f req = f req >|= (fun _ -> `String "Ok") >|= respond
 
@@ -537,8 +538,8 @@ module RemoteMaintenanceGui = struct
              Systemd.Manager.start_unit systemd "zerotierone.service"
            in
            with_timeout
-             { duration= 2.0
-             ; on_timeout=
+             { duration = 2.0
+             ; on_timeout =
                  (fun () ->
                    let msg = "Timeout starting remote maintenance service." in
                    let%lwt () = Logs_lwt.err (fun m -> m "%s" msg) in

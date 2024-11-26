@@ -48,7 +48,7 @@ let proxy_form proxy =
               ; a_name "proxy_user"
               ; a_value
                   ( match proxy with
-                  | Some { credentials= Some { user } } ->
+                  | Some { credentials = Some { user } } ->
                       user
                   | _ ->
                       ""
@@ -59,7 +59,7 @@ let proxy_form proxy =
     ; div
         ~a:
           ( match proxy with
-          | Some { credentials= Some { password } } ->
+          | Some { credentials = Some { password } } ->
               if password <> "" then
                 [ Unsafe.string_attrib "is" "keep-previous-password" ]
               else []

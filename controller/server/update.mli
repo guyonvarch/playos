@@ -2,9 +2,9 @@
 *)
 type version_info =
   { (* the latest available version *)
-    latest: Semver.t (* version of currently booted system *)
-  ; booted: Semver.t (* version of inactive system *)
-  ; inactive: Semver.t
+    latest : Semver.t (* version of currently booted system *)
+  ; booted : Semver.t (* version of inactive system *)
+  ; inactive : Semver.t
   }
 [@@deriving sexp_of]
 
@@ -26,9 +26,9 @@ type sleep_duration = float (* seconds *)
 
 type config =
   { (* time to sleep in seconds until retrying after a (Curl/HTTP) error *)
-    error_backoff_duration: sleep_duration
+    error_backoff_duration : sleep_duration
   ; (* time to sleep in seconds between checking for available updates *)
-    check_for_updates_interval: sleep_duration
+    check_for_updates_interval : sleep_duration
   }
 
 module type ServiceDeps = sig

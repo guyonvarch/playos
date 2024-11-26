@@ -1,9 +1,9 @@
 open Protocol_conv_jsonm
 
 type params =
-  { proxy: string option
-  ; services: Connman.Service.t list
-  ; interfaces: Network.Interface.t list
+  { proxy : string option
+  ; services : Connman.Service.t list
+  ; interfaces : Network.Interface.t list
   }
 [@@deriving protocol ~driver:(module Jsonm)]
 
