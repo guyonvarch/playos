@@ -13,16 +13,23 @@ let pretty_print_error error =
   match error with
   | UnsuccessfulStatus (code, body) ->
       Printf.sprintf "unsuccessful status %d: %s" code body
-  | UnreadableStatus body -> Printf.sprintf "unreadable status code %s" body
+  | UnreadableStatus body ->
+      Printf.sprintf "unreadable status code %s" body
   | ProcessExit (n, err) ->
       Printf.sprintf "curl error: %s (non-zero exit code %d)" (String.trim err)
         n
-  | ProcessKill n -> Printf.sprintf "curl killed by signal %d" n
-  | ProcessStop n -> Printf.sprintf "curl stopped by signal %d" n
-  | UnixError err -> Printf.sprintf "unix error: %s" err
-  | EndOfFile -> "end of file"
-  | ChannelClosed err -> Printf.sprintf "channel closed: %s" err
-  | Exception err -> Printf.sprintf "exception: %s" err
+  | ProcessKill n ->
+      Printf.sprintf "curl killed by signal %d" n
+  | ProcessStop n ->
+      Printf.sprintf "curl stopped by signal %d" n
+  | UnixError err ->
+      Printf.sprintf "unix error: %s" err
+  | EndOfFile ->
+      "end of file"
+  | ChannelClosed err ->
+      Printf.sprintf "channel closed: %s" err
+  | Exception err ->
+      Printf.sprintf "exception: %s" err
 
 type result =
   | RequestSuccess of int * string
@@ -66,16 +73,15 @@ let request ?proxy ?(headers = []) ?data ?(options = []) url =
            ; Char.escaped http_code_marker ^ "%{http_code}"
           |]
         ; ( match proxy with
-          | Some p -> [|"--proxy"; Uri.to_string p; "--proxy-anyauth"|]
-          | None -> [||]
+          | Some p ->
+              [| "--proxy"; Uri.to_string p; "--proxy-anyauth" |]
+          | None ->
+              [||]
           )
         ; headers
-          |> List.map (fun (k, v) -> [|"--header"; k ^ ":" ^ v|])
+          |> List.map (fun (k, v) -> [| "--header"; k ^ ":" ^ v |])
           |> Array.concat
-        ; ( match data with
-          | Some d -> [|"--data"; d|]
-          | None -> [||]
-          )
+        ; (match data with Some d -> [| "--data"; d |] | None -> [||])
         ; Base.List.to_array options
         ]
     )
@@ -87,7 +93,8 @@ let request ?proxy ?(headers = []) ?data ?(options = []) url =
         if Cohttp.Code.is_success code then
           Lwt.return (RequestSuccess (code, body))
         else Lwt.return (RequestFailure (UnsuccessfulStatus (code, body)))
-    | None -> Lwt.return (RequestFailure (UnreadableStatus stdout))
+    | None ->
+        Lwt.return (RequestFailure (UnreadableStatus stdout))
   )
   | Ok (Unix.WEXITED n, _, stderr) ->
       Lwt.return (RequestFailure (ProcessExit (n, stderr)))
@@ -97,7 +104,9 @@ let request ?proxy ?(headers = []) ?data ?(options = []) url =
       Lwt.return (RequestFailure (ProcessStop signal))
   | Error (Unix.Unix_error (err, _, _)) ->
       Lwt.return (RequestFailure (UnixError (Unix.error_message err)))
-  | Error End_of_file -> Lwt.return (RequestFailure EndOfFile)
+  | Error End_of_file ->
+      Lwt.return (RequestFailure EndOfFile)
   | Error (Lwt_io.Channel_closed err) ->
       Lwt.return (RequestFailure (ChannelClosed err))
-  | Error exn -> Lwt.return (RequestFailure (Exception (Printexc.to_string exn)))
+  | Error exn ->
+      Lwt.return (RequestFailure (Exception (Printexc.to_string exn)))

@@ -24,7 +24,7 @@ let daemon () =
   return peer
 
 let proxy daemon =
-  OBus_proxy.make ~peer:daemon ~path:["org"; "freedesktop"; "timedate1"]
+  OBus_proxy.make ~peer:daemon ~path:[ "org"; "freedesktop"; "timedate1" ]
 
 let get_active_timezone daemon =
   let%lwt raw_tz =
@@ -34,28 +34,28 @@ let get_active_timezone daemon =
   if String.length raw_tz = 0 then None |> return else Some raw_tz |> return
 
 let get_current_time daemon =
-  Lwt_process.pread ("", [|"date"; "+%Y-%m-%d %H:%M UTC%z"|])
+  Lwt_process.pread ("", [| "date"; "+%Y-%m-%d %H:%M UTC%z" |])
 
 let get_available_timezones daemon =
   (* Newer versions of systemd add a DBus property for this. *)
-  Lwt_process.pread_lines ("", [|"timedatectl"; "list-timezones"|])
+  Lwt_process.pread_lines ("", [| "timedatectl"; "list-timezones" |])
   |> Lwt_stream.to_list
 
 (* Auto generated with obus-gen-client *)
 module Org_freedesktop_timedate1 : sig
-  val timezone : OBus_proxy.t -> (string, [`readable]) OBus_property.t
+  val timezone : OBus_proxy.t -> (string, [ `readable ]) OBus_property.t
 
-  val local_rtc : OBus_proxy.t -> (bool, [`readable]) OBus_property.t
+  val local_rtc : OBus_proxy.t -> (bool, [ `readable ]) OBus_property.t
 
-  val can_ntp : OBus_proxy.t -> (bool, [`readable]) OBus_property.t
+  val can_ntp : OBus_proxy.t -> (bool, [ `readable ]) OBus_property.t
 
-  val ntp : OBus_proxy.t -> (bool, [`readable]) OBus_property.t
+  val ntp : OBus_proxy.t -> (bool, [ `readable ]) OBus_property.t
 
-  val ntpsynchronized : OBus_proxy.t -> (bool, [`readable]) OBus_property.t
+  val ntpsynchronized : OBus_proxy.t -> (bool, [ `readable ]) OBus_property.t
 
-  val time_usec : OBus_proxy.t -> (int64, [`readable]) OBus_property.t
+  val time_usec : OBus_proxy.t -> (int64, [ `readable ]) OBus_property.t
 
-  val rtctime_usec : OBus_proxy.t -> (int64, [`readable]) OBus_property.t
+  val rtctime_usec : OBus_proxy.t -> (int64, [ `readable ]) OBus_property.t
 
   val set_time : OBus_proxy.t -> int64 -> bool -> bool -> unit Lwt.t
 

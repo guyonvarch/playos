@@ -43,13 +43,7 @@ let test_random_failure_case =
   in
   let print_t (seq_upd, seq_rauc, inp_case) =
     let fail_seq_to_str seq =
-      List.map
-        (function
-          | true -> "x"
-          | false -> "_"
-          )
-        seq
-      |> String.concat ""
+      List.map (function true -> "x" | false -> "_") seq |> String.concat ""
     in
     let test_case_descr = Helpers.slot_spec_to_string inp_case in
     Format.sprintf
@@ -118,7 +112,7 @@ let test_random_failure_case =
     ~print:print_t gen test_check
 
 let () =
-  let argv_with_verbose = Array.append Sys.argv [|"--verbose"|] in
+  let argv_with_verbose = Array.append Sys.argv [| "--verbose" |] in
   Alcotest.run ~argv:argv_with_verbose ~and_exit:false
     "UpdateService qcheck/prop tests"
     [ ( "Fault injection test"

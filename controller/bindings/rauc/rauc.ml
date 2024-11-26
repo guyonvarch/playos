@@ -22,17 +22,20 @@ module Slot = struct
     | SystemB
 
   let of_string = function
-    | "a" -> SystemA
-    | "system.a" -> SystemA
-    | "b" -> SystemB
-    | "system.b" -> SystemB
-    | _ -> failwith "Unexpected slot identifier."
+    | "a" ->
+        SystemA
+    | "system.a" ->
+        SystemA
+    | "b" ->
+        SystemB
+    | "system.b" ->
+        SystemB
+    | _ ->
+        failwith "Unexpected slot identifier."
 
   let t_of_string = of_string
 
-  let string_of_t = function
-    | SystemA -> "system.a"
-    | SystemB -> "system.b"
+  let string_of_t = function SystemA -> "system.a" | SystemB -> "system.b"
 
   type status =
     { device: string
@@ -75,8 +78,10 @@ let slot_status_of_obus (o : (string * OBus_value.V.single) list) : Slot.status
   let get_string key o =
     let open OBus_value.V in
     match List.assoc_opt key o with
-    | Some (Basic (String s)) -> s
-    | _ -> failwith (Format.sprintf "could not get string from field %s" key)
+    | Some (Basic (String s)) ->
+        s
+    | _ ->
+        failwith (Format.sprintf "could not get string from field %s" key)
   in
   { device= get_string "device" o
   ; class'= get_string "class" o
@@ -117,7 +122,8 @@ let install daemon source =
     OBus_method.call De_pengutronix_rauc_Installer.m_Install proxy source
   in
   match%lwt Lwt_react.E.next completed_e with
-  | 0 -> return_unit
+  | 0 ->
+      return_unit
   | exit_code ->
       Lwt.fail_with
         (Format.sprintf "installing bundle (%s) failed with exit code %d" source
@@ -143,18 +149,18 @@ module De_pengutronix_rauc_Installer : sig
 
   val completed : OBus_proxy.t -> int OBus_signal.t
 
-  val operation : OBus_proxy.t -> (string, [`readable]) OBus_property.t
+  val operation : OBus_proxy.t -> (string, [ `readable ]) OBus_property.t
 
-  val last_error : OBus_proxy.t -> (string, [`readable]) OBus_property.t
+  val last_error : OBus_proxy.t -> (string, [ `readable ]) OBus_property.t
 
   val progress :
-    OBus_proxy.t -> (int * string * int, [`readable]) OBus_property.t
+    OBus_proxy.t -> (int * string * int, [ `readable ]) OBus_property.t
 
-  val compatible : OBus_proxy.t -> (string, [`readable]) OBus_property.t
+  val compatible : OBus_proxy.t -> (string, [ `readable ]) OBus_property.t
 
-  val variant : OBus_proxy.t -> (string, [`readable]) OBus_property.t
+  val variant : OBus_proxy.t -> (string, [ `readable ]) OBus_property.t
 
-  val boot_slot : OBus_proxy.t -> (string, [`readable]) OBus_property.t
+  val boot_slot : OBus_proxy.t -> (string, [ `readable ]) OBus_property.t
 end = struct
   open De_pengutronix_rauc_Installer
 

@@ -4,14 +4,19 @@ open Test_mocks
 
 let other_slot slot =
   match slot with
-  | Rauc.Slot.SystemA -> Rauc.Slot.SystemB
-  | Rauc.Slot.SystemB -> Rauc.Slot.SystemA
+  | Rauc.Slot.SystemA ->
+      Rauc.Slot.SystemB
+  | Rauc.Slot.SystemB ->
+      Rauc.Slot.SystemA
 
 let slot_to_string = function
-  | Rauc.Slot.SystemA -> "SystemA"
-  | Rauc.Slot.SystemB -> "SystemB"
+  | Rauc.Slot.SystemA ->
+      "SystemA"
+  | Rauc.Slot.SystemB ->
+      "SystemB"
 
-let version_info_to_string ({latest; booted; inactive} : Update.version_info) =
+let version_info_to_string ({ latest; booted; inactive } : Update.version_info)
+    =
   Format.sprintf "{latest=%s booted=%s inactive=%s}" (Semver.to_string latest)
     (Semver.to_string booted)
     (Semver.to_string inactive)
@@ -22,7 +27,7 @@ let statefmt (state : Update.state) : string =
 (* === Mock init and setup === *)
 
 let default_test_config : Update.config =
-  {error_backoff_duration= 0.01; check_for_updates_interval= 0.05}
+  { error_backoff_duration= 0.01; check_for_updates_interval= 0.05 }
 
 type test_context =
   { update_client: Mock_update_client.mock
@@ -49,7 +54,7 @@ let init_test_deps ?(failure_gen_rauc = no_failure_gen)
     let config = test_config
   end in
   let module TestUpdateService = Update.Make (TestUpdateServiceDeps) in
-  {update_client; rauc; update_service= (module TestUpdateService)}
+  { update_client; rauc; update_service= (module TestUpdateService) }
 
 type system_slot_spec =
   { booted_slot: Rauc.Slot.t
@@ -57,14 +62,14 @@ type system_slot_spec =
   ; input_versions: Update.version_info
   }
 
-let slot_spec_to_string {booted_slot; primary_slot; input_versions} =
+let slot_spec_to_string { booted_slot; primary_slot; input_versions } =
   Format.sprintf "booted=%s\tprimary=%s\tvsns%s"
     (slot_to_string booted_slot)
     (Option.map slot_to_string primary_slot |> Option.value ~default:"-")
     (version_info_to_string input_versions)
 
-let setup_mocks_from_system_slot_spec {rauc; update_client} case =
-  let {booted_slot; primary_slot; input_versions} = case in
+let setup_mocks_from_system_slot_spec { rauc; update_client } case =
+  let { booted_slot; primary_slot; input_versions } = case in
   let booted_version = Semver.to_string input_versions.booted in
   let secondary_version = Semver.to_string input_versions.inactive in
   let upstream_version = Semver.to_string input_versions.latest in
@@ -91,15 +96,15 @@ let product l1 l2 =
 
 let product3 l1 l2 l3 = product l1 (product l2 l3) |> List.map flatten_tuple
 
-let possible_versions = [v1; v2; v3]
+let possible_versions = [ v1; v2; v3 ]
 
-let possible_booted_slots = [Rauc.Slot.SystemA; Rauc.Slot.SystemB]
+let possible_booted_slots = [ Rauc.Slot.SystemA; Rauc.Slot.SystemB ]
 
 let possible_primary_slots = None :: List.map Option.some possible_booted_slots
 
 let vsn_triple_to_version_info (latest, booted, inactive) : Update.version_info
     =
-  {latest; booted; inactive}
+  { latest; booted; inactive }
 
 let all_possible_slot_spec_combos =
   let vsn_triples =
@@ -111,6 +116,6 @@ let all_possible_slot_spec_combos =
   List.map
     (fun (vsns, booted_slot, primary_slot) ->
       let vsn_info = vsn_triple_to_version_info vsns in
-      {booted_slot; primary_slot; input_versions= vsn_info}
+      { booted_slot; primary_slot; input_versions= vsn_info }
     )
     combos

@@ -20,11 +20,11 @@ let svg ?a ?stroke_width content =
 
 let line (x1, y1) (x2, y2) =
   Tyxml.Svg.line
-    ~a:[a_x1 (x1, None); a_y1 (y1, None); a_x2 (x2, None); a_y2 (y2, None)]
+    ~a:[ a_x1 (x1, None); a_y1 (y1, None); a_x2 (x2, None); a_y2 (y2, None) ]
     []
 
 let circle (x, y) r =
-  Tyxml.Svg.circle ~a:[a_cx (x, None); a_cy (y, None); a_r (r, None)] []
+  Tyxml.Svg.circle ~a:[ a_cx (x, None); a_cy (y, None); a_r (r, None) ] []
 
 let rect ?rx ?fill (x1, y1) (x2, y2) =
   Tyxml.Svg.rect
@@ -42,7 +42,10 @@ let rect ?rx ?fill (x1, y1) (x2, y2) =
 
 let info =
   svg
-    [circle (12., 12.) 10.; line (12., 16.) (12., 12.); line (12., 8.) (12., 8.)]
+    [ circle (12., 12.) 10.
+    ; line (12., 16.) (12., 12.)
+    ; line (12., 8.) (12., 8.)
+    ]
 
 let wifi ?strength () =
   let strength = Option.value ~default:100 strength in
@@ -53,22 +56,22 @@ let wifi ?strength () =
     else "Strong"
   in
   svg
-    ~a:[a_class ["d-WifiSignal--" ^ modifier]]
+    ~a:[ a_class [ "d-WifiSignal--" ^ modifier ] ]
     [ path
         ~a:
-          [ a_class ["d-WifiSignal__Wave--Outer"]
+          [ a_class [ "d-WifiSignal__Wave--Outer" ]
           ; a_d "M1.42 9a16 16 0 0 1 21.16 0"
           ]
         []
     ; path
         ~a:
-          [ a_class ["d-WifiSignal__Wave--Middle"]
+          [ a_class [ "d-WifiSignal__Wave--Middle" ]
           ; a_d "M5 12.55a11 11 0 0 1 14.08 0"
           ]
         []
     ; path
         ~a:
-          [ a_class ["d-WifiSignal__Wave--Inner"]
+          [ a_class [ "d-WifiSignal__Wave--Inner" ]
           ; a_d "M8.53 16.11a6 6 0 0 1 6.95 0"
           ]
         []
@@ -77,7 +80,7 @@ let wifi ?strength () =
 
 let ethernet =
   svg
-    [ path ~a:[a_d "M2 2 H22 V18 H18 V22 H6 V18 H2 Z"] []
+    [ path ~a:[ a_d "M2 2 H22 V18 H18 V22 H6 V18 H2 Z" ] []
     ; line (6., 6.) (6., 10.)
     ; line (10., 6.) (10., 10.)
     ; line (14., 6.) (14., 10.)
@@ -99,7 +102,9 @@ let world =
 
 let power =
   svg
-    [path ~a:[a_d "M18.36 6.64a9 9 0 1 1-12.73 0"] []; line (12., 2.) (12., 12.)]
+    [ path ~a:[ a_d "M18.36 6.64a9 9 0 1 1-12.73 0" ] []
+    ; line (12., 2.) (12., 12.)
+    ]
 
 let screen =
   svg
@@ -136,7 +141,7 @@ let letter =
           ; a_dominant_baseline `Middle
           ; a_text_anchor `Middle
           ]
-        [txt "A"]
+        [ txt "A" ]
     ]
 
 let copyright =
@@ -150,5 +155,5 @@ let copyright =
           ; a_dominant_baseline `Middle
           ; a_text_anchor `Middle
           ]
-        [txt "C"]
+        [ txt "C" ]
     ]

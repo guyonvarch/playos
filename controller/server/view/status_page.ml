@@ -15,9 +15,9 @@ type params =
   }
 
 let definition term description =
-  [ Definition.term [txt term]
+  [ Definition.term [ txt term ]
   ; Definition.description
-      [pre ~a:[a_class ["d-Preformatted"]] [txt description]]
+      [ pre ~a:[ a_class [ "d-Preformatted" ] ] [ txt description ] ]
   ]
 
 let health_fmt s = s |> Health.sexp_of_state |> Sexplib.Sexp.to_string_hum
@@ -28,14 +28,17 @@ let rauc_fmt s = s |> sexp_of_rauc_state |> Sexplib.Sexp.to_string_hum
 
 let slot_fmt = Rauc.Slot.string_of_t
 
-let opt_elem opt = Option.value ~default:[] @@ Option.map (fun e -> [e]) opt
+let opt_elem opt = Option.value ~default:[] @@ Option.map (fun e -> [ e ]) opt
 
 let action_form ?confirm_msg action button_label =
   form
-    ~a:[a_action action; a_method `Post; a_class ["d-Status__ActionForm"]]
+    ~a:[ a_action action; a_method `Post; a_class [ "d-Status__ActionForm" ] ]
     [ input
         ~a:
-          ([a_input_type `Submit; a_class ["d-Button"]; a_value button_label]
+          ([ a_input_type `Submit
+           ; a_class [ "d-Button" ]
+           ; a_value button_label
+           ]
           @ opt_elem
               (Option.map
                  (fun m -> a_onclick (Format.sprintf "return confirm('%s');" m))
@@ -45,7 +48,7 @@ let action_form ?confirm_msg action button_label =
         ()
     ]
 
-let note body = div ~a:[a_class ["d-Note"]] [txt body]
+let note body = div ~a:[ a_class [ "d-Note" ] ] [ txt body ]
 
 let reboot_call =
   [ note
@@ -101,33 +104,33 @@ let factory_reset_call =
 
 let other_slot =
   let open Rauc.Slot in
-  function
-  | SystemA -> SystemB
-  | SystemB -> SystemA
+  function SystemA -> SystemB | SystemB -> SystemA
 
 let suggested_action_of_state (update : Update.state) (rauc : rauc_state)
     booted_slot =
   let target_slot = other_slot booted_slot in
   match (update, rauc) with
-  | RebootRequired, _ -> Some (Definition.description reboot_call)
+  | RebootRequired, _ ->
+      Some (Definition.description reboot_call)
   | OutOfDateVersionSelected, Status _ ->
       Some (Definition.description (switch_to_newer_system_call target_slot))
-  | UpToDate {booted; inactive}, Status _ when booted <> inactive ->
+  | UpToDate { booted; inactive }, Status _ when booted <> inactive ->
       Some (Definition.description (switch_to_older_system_call target_slot))
   | ReinstallRequired, _ ->
       Some (Definition.description (reinstall_call target_slot))
-  | _ -> None
+  | _ ->
+      None
 
-let html {health; booted_slot; update; rauc} =
+let html { health; booted_slot; update; rauc } =
   let opt_action = suggested_action_of_state update rauc booted_slot in
   Page.html ~current_page:Page.SystemStatus
-    ~header:(Page.header_title ~icon:Icon.screen [txt "System Status"])
+    ~header:(Page.header_title ~icon:Icon.screen [ txt "System Status" ])
     (Definition.list
        (definition "Health" (health_fmt health)
        @ definition "Update State" (update_fmt update)
        @ opt_elem opt_action
        @ definition "RAUC" (rauc_fmt rauc)
-       @ [ Definition.term [txt "Factory reset"]
+       @ [ Definition.term [ txt "Factory reset" ]
          ; Definition.description factory_reset_call
          ]
        )

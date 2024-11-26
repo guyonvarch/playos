@@ -3,4 +3,4 @@ type params =
   ; request: string
   }
 
-val html : params -> [> Html_types.html] Tyxml.Html.elt
+val html : params -> [> Html_types.html ] Tyxml.Html.elt

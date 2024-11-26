@@ -14,7 +14,7 @@ module Manager = struct
     let peer =
       OBus_peer.make ~connection:system_bus ~name:"org.freedesktop.systemd1"
     in
-    OBus_proxy.make ~peer ~path:["org"; "freedesktop"; "systemd1"] |> return
+    OBus_proxy.make ~peer ~path:[ "org"; "freedesktop"; "systemd1" ] |> return
 
   type system_state =
     | Initializing
@@ -30,15 +30,24 @@ module Manager = struct
   let get_system_state proxy =
     let system_state_of_string s =
       match s with
-      | "initializing" -> Initializing
-      | "starting" -> Starting
-      | "running" -> Running
-      | "degraded" -> Degraded
-      | "maintenance" -> Maintenance
-      | "stopping" -> Stopping
-      | "offline" -> Offline
-      | "unknown" -> Unknown
-      | _ -> failwith (Format.sprintf "unexpected system state (%s)" s)
+      | "initializing" ->
+          Initializing
+      | "starting" ->
+          Starting
+      | "running" ->
+          Running
+      | "degraded" ->
+          Degraded
+      | "maintenance" ->
+          Maintenance
+      | "stopping" ->
+          Stopping
+      | "offline" ->
+          Offline
+      | "unknown" ->
+          Unknown
+      | _ ->
+          failwith (Format.sprintf "unexpected system state (%s)" s)
     in
     OBus_property.make Org_freedesktop_systemd1_Manager.p_SystemState proxy
     |> OBus_property.get >|= system_state_of_string

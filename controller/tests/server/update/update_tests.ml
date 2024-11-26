@@ -3,7 +3,7 @@ open Test_mocks
 open Update_test_helpers
 
 (* Main test scenario: full update process *)
-let both_out_of_date ({update_client; rauc} : Helpers.test_context) =
+let both_out_of_date ({ update_client; rauc } : Helpers.test_context) =
   let init_state = GettingVersionInfo in
   let booted_version = "10.0.0" in
   let inactive_version = "9.0.0" in
@@ -46,7 +46,7 @@ let both_out_of_date ({update_client; rauc} : Helpers.test_context) =
   (expected_state_sequence, init_state)
 
 let delete_downloaded_bundle_on_err
-    ({update_client; rauc} : Helpers.test_context) =
+    ({ update_client; rauc } : Helpers.test_context) =
   let inactive_version = "9.0.0" in
   let upstream_version = "10.0.0" in
   let init_state = Downloading upstream_version in
@@ -89,9 +89,9 @@ let delete_downloaded_bundle_on_err
 let sleep_after_error_or_check_test () =
   (* long-ish timeouts, but these will run in parallel, so no biggie *)
   let test_config =
-    {error_backoff_duration= 1.0; check_for_updates_interval= 2.0}
+    { error_backoff_duration= 1.0; check_for_updates_interval= 2.0 }
   in
-  let ({update_service; _} : Helpers.test_context) =
+  let ({ update_service; _ } : Helpers.test_context) =
     Helpers.init_test_deps ~test_config ()
   in
   let module UpdateServiceI = (val update_service) in
@@ -133,42 +133,42 @@ let sleep_after_error_or_check_test () =
 
 let both_newer_than_upstream =
   let input_versions =
-    {booted= Helpers.v3; inactive= Helpers.v2; latest= Helpers.v1}
+    { booted= Helpers.v3; inactive= Helpers.v2; latest= Helpers.v1 }
   in
   let expected_state = UpToDate input_versions in
   Scenario.scenario_from_system_spec ~input_versions expected_state
 
 let booted_newer_secondary_older =
   let input_versions =
-    {latest= Helpers.v2; booted= Helpers.v3; inactive= Helpers.v1}
+    { latest= Helpers.v2; booted= Helpers.v3; inactive= Helpers.v1 }
   in
   let expected_state = UpToDate input_versions in
   Scenario.scenario_from_system_spec ~input_versions expected_state
 
 let booted_older_secondary_newer =
   let input_versions =
-    {latest= Helpers.v2; booted= Helpers.v1; inactive= Helpers.v3}
+    { latest= Helpers.v2; booted= Helpers.v1; inactive= Helpers.v3 }
   in
   let expected_state = OutOfDateVersionSelected in
   Scenario.scenario_from_system_spec ~input_versions expected_state
 
 let booted_current_secondary_current =
   let input_versions =
-    {latest= Helpers.v2; booted= Helpers.v2; inactive= Helpers.v2}
+    { latest= Helpers.v2; booted= Helpers.v2; inactive= Helpers.v2 }
   in
   let expected_state = UpToDate input_versions in
   Scenario.scenario_from_system_spec ~input_versions expected_state
 
 let booted_current_secondary_older =
   let input_versions =
-    {latest= Helpers.v2; booted= Helpers.v2; inactive= Helpers.v1}
+    { latest= Helpers.v2; booted= Helpers.v2; inactive= Helpers.v1 }
   in
   let expected_state = UpToDate input_versions in
   Scenario.scenario_from_system_spec ~input_versions expected_state
 
 let booted_older_secondary_current =
   let input_versions =
-    {latest= Helpers.v2; booted= Helpers.v1; inactive= Helpers.v2}
+    { latest= Helpers.v2; booted= Helpers.v1; inactive= Helpers.v2 }
   in
   let expected_state = OutOfDateVersionSelected in
   Scenario.scenario_from_system_spec ~input_versions expected_state

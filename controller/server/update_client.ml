@@ -52,7 +52,8 @@ module UpdateClient (DepsI : UpdateClientDeps) = struct
     let%lwt proxy = get_proxy () in
     let url = Uri.of_string @@ base_url_with_trailing_slash ^ "latest" in
     match%lwt Curl.request ?proxy url with
-    | RequestSuccess (_, body) -> return body
+    | RequestSuccess (_, body) ->
+        return body
     | RequestFailure error ->
         Lwt.fail_with
           (Printf.sprintf "could not get latest version (%s)"
@@ -76,7 +77,8 @@ module UpdateClient (DepsI : UpdateClientDeps) = struct
     in
     let%lwt proxy = get_proxy () in
     match%lwt Curl.request ?proxy ~options url with
-    | RequestSuccess _ -> return bundle_path
+    | RequestSuccess _ ->
+        return bundle_path
     | RequestFailure error ->
         Lwt.fail_with
           (Printf.sprintf "could not download RAUC bundle (%s)"
